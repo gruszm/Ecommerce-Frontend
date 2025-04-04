@@ -1,11 +1,10 @@
 .product-list-item-container {
     display: flex;
-    margin-left: 20px;
     border: 4px solid black;
     margin-top: 5px;
     margin-right: 20px;
+    margin-left: 20px;
     padding: 12px;
-    max-width: 40%;
 }
 
 .product-list-item-info p {

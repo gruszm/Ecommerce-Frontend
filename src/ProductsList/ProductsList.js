@@ -28,7 +28,7 @@ export default function ProductsList(props) {
     if (error) return <p>Error: {errorMessage}</p>;
 
     return (
-        <div>
+        <div className="product-list-container">
             {productsList.map(singleProduct => <ProductsListItem key={singleProduct.id} productData={singleProduct} />)}
         </div>
     );
