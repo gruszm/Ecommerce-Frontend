@@ -3,11 +3,21 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import ProductsList from './ProductsList/ProductsList';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import NavigationBar from './NavigationBar/NavigationBar';
+import Login from './Login/Login';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ProductsList />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<NavigationBar />}>
+          <Route index element={<ProductsList />} />
+          <Route path="login" element={<Login />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>
 );
 
