@@ -12,6 +12,9 @@ export default function NavigationBar(props) {
                     <li>
                         <Link to="/login">Zaloguj</Link>
                     </li>
+                    <li>
+                        <Link to="/cart">Koszyk</Link>
+                    </li>
                 </ul>
             </nav>
             <Outlet />

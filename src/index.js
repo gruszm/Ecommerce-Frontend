@@ -2,10 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import ProductsList from './ProductsList/ProductsList';
+import ProductList from './ProductList/ProductList';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NavigationBar from './NavigationBar/NavigationBar';
 import Login from './Login/Login';
+import Cart from './Cart/Cart';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -13,8 +14,9 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<NavigationBar />}>
-          <Route index element={<ProductsList />} />
+          <Route index element={<ProductList />} />
           <Route path="login" element={<Login />} />
+          <Route path="cart" element={<Cart />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import "./ProductsList.css";
-import ProductsListItem from "../ProductListItem/ProductListItem";
+import "./ProductList.css";
+import ProductListItem from "../ProductListItem/ProductListItem";
 
-export default function ProductsList(props) {
+export default function ProductList(props) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [productsList, setProductsList] = useState([]);
+    const [ProductList, setProductList] = useState([]);
 
     useEffect(() => {
         const url = "http://" + process.env.REACT_APP_GATEWAY + ":" + process.env.REACT_APP_GATEWAY_PORT + "/api/public/products";
@@ -15,7 +15,7 @@ export default function ProductsList(props) {
             .then(res => res.json())
             .then(res => {
                 setLoading(false);
-                setProductsList(res);
+                setProductList(res);
             })
             .catch(error => {
                 setLoading(false);
@@ -29,7 +29,7 @@ export default function ProductsList(props) {
 
     return (
         <div className="product-list-container">
-            {productsList.map(singleProduct => <ProductsListItem key={singleProduct.id} productData={singleProduct} />)}
+            {ProductList.map(singleProduct => <ProductListItem key={singleProduct.id} productData={singleProduct} />)}
         </div>
     );
 }
