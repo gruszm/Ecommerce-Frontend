@@ -1,10 +1,13 @@
 import "./Login.css";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 export default function Login(props) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [debug, setDebug] = useState("");
+    const navigate = useNavigate();
 
     const login = async function (event) {
         event.preventDefault();
@@ -22,15 +25,16 @@ export default function Login(props) {
             }
         );
 
-        if (!response.ok) {
-            const errorResponse = await response.json();
+        if (response.ok) {
+            const parsedData = await response.json();
+            const { token, daysUntilExpires } = parsedData;
 
-            setDebug(`${response.status}: ${errorResponse.message}`);
+            Cookies.set("auth-token", token, { expires: daysUntilExpires });
+            
+            navigate("/");
         }
         else {
-            const successResponse = await response.json();
 
-            setDebug(`Login successful, access token: ${successResponse.token}`);
         }
     };
 
