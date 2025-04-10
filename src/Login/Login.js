@@ -6,7 +6,6 @@ import Cookies from "js-cookie";
 export default function Login(props) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [debug, setDebug] = useState("");
     const navigate = useNavigate();
 
     const login = async function (event) {
@@ -45,7 +44,6 @@ export default function Login(props) {
                 <input type="password" name="password" id="password" placeholder="hasło" onChange={event => setPassword(event.target.value)} />
                 <button type="submit">Zaloguj</button>
             </form>
-            {debug}
         </div>
     );
 }
