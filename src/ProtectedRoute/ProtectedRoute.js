@@ -12,6 +12,7 @@ export default function ProtectedRoute(props) {
         if (!token) {
             setAuthChecked(true);
             setAuthorized(false);
+
             return;
         }
 
@@ -21,12 +22,20 @@ export default function ProtectedRoute(props) {
         fetch(url,
             {
                 body: JSON.stringify(body),
-                method: "POST"
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
             })
-            .then(res => res.json())
             .then(res => {
                 setAuthChecked(true);
-                setAuthorized(res.tokenValid);
+
+                if (res.ok) {
+                    setAuthorized(true);
+                }
+                else {
+                    setAuthorized(false);
+                }
             })
             .catch(error => {
                 setAuthChecked(true);
