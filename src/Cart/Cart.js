@@ -1,3 +1,4 @@
+import "./Cart.css"
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import CartEntry from "../CartEntry/CartEntry";
@@ -34,8 +35,10 @@ export default function Cart(props) {
     }
 
     return (
-        <div>
-            <p>Koszyk:</p>
+        <div className="cart-container">
+            <div className="cart-text">
+                <p>Koszyk:</p>
+            </div>
             {errorMessage === "" ? null : <p>{errorMessage}</p>}
             {cart.cartEntries.map(entry => <CartEntry key={entry.id} entryData={entry} />)}
         </div>

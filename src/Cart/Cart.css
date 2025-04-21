@@ -1,0 +1,13 @@
+.cart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cart-text {
+    width: 80%;
+}
+
+.cart-text p {
+    align-self: flex-start;
+}
