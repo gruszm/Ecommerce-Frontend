@@ -1,12 +1,14 @@
 import "./Login.css";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { AuthContext } from "../AuthContext";
 
 export default function Login(props) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const { setAuthenticated } = useContext(AuthContext);
 
     const login = async function (event) {
         event.preventDefault();
@@ -29,8 +31,9 @@ export default function Login(props) {
             const { token, daysUntilExpires } = parsedData;
 
             Cookies.set("auth-token", token, { expires: daysUntilExpires });
-            
-            navigate("/");
+
+            setAuthenticated(true);
+            navigate("/", { replace: true });
         }
         else {
 

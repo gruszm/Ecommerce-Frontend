@@ -8,20 +8,25 @@ import NavigationBar from './NavigationBar/NavigationBar';
 import Login from './Login/Login';
 import Cart from './Cart/Cart';
 import ProtectedRoute from './ProtectedRoute/ProtectedRoute';
+import { AuthProvider } from './AuthContext';
+import Logout from './Logout/Logout';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<NavigationBar />}>
-          <Route index element={<ProductList />} />
-          <Route path="login" element={<Login />} />
-          <Route element={<ProtectedRoute />}>
-            <Route path="cart" element={<Cart />} />
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<NavigationBar />}>
+            <Route index element={<ProductList />} />
+            <Route path="login" element={<Login />} />
+            <Route path="logout" element={<Logout />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="cart" element={<Cart />} />
+            </Route>
           </Route>
-        </Route>
-      </Routes>
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
