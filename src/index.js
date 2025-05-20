@@ -10,6 +10,9 @@ import Cart from './Cart/Cart';
 import ProtectedRoute from './ProtectedRoute/ProtectedRoute';
 import { AuthProvider } from './AuthContext';
 import Logout from './Logout/Logout';
+import AccessDenied from './AccessDenied/AccessDenied';
+import AdminRoute from './AdminRoute/AdminRoute';
+import AdminPanel from './AdminPanel/AdminPanel';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -23,6 +26,10 @@ root.render(
             <Route path="logout" element={<Logout />} />
             <Route element={<ProtectedRoute />}>
               <Route path="cart" element={<Cart />} />
+            </Route>
+            <Route path="access-denied" element={<AccessDenied />} />
+            <Route element={<AdminRoute />}>
+              <Route path="admin-panel" element={<AdminPanel />} />
             </Route>
           </Route>
         </Routes>

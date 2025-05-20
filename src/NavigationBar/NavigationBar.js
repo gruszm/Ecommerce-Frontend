@@ -4,7 +4,7 @@ import { useContext, useEffect } from "react";
 import { AuthContext } from "../AuthContext";
 import Cookies from "js-cookie";
 
-export default function NavigationBar(props) {
+export default function NavigationBar() {
     const { isAuthenticated, setAuthenticated } = useContext(AuthContext);
 
     useEffect(() => {
