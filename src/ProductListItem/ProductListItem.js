@@ -1,15 +1,16 @@
 import "./ProductListItem.css";
 import Cookies from "js-cookie";
 import { useState } from "react";
+import { buildSecureUrl } from "../utils/api";
 
 export default function ProductListItem(props) {
-    const [debug, setDebug] = useState("debug");
+    const [addToCartMessage, setAddToCartMessage] = useState("");
 
     function addToCart(event) {
         event.preventDefault();
 
         const token = Cookies.get("auth-token");
-        const url = "http://" + process.env.REACT_APP_GATEWAY + ":" + process.env.REACT_APP_GATEWAY_PORT + "/api/secure/carts/" + props.productData.id + "/1";
+        const url = buildSecureUrl(`/carts/${props.productData.id}/1`);
 
         fetch(url, {
             method: "POST",
@@ -19,10 +20,10 @@ export default function ProductListItem(props) {
             },
         }).then(async res => {
             if (res.ok) {
-                setDebug("Dodano do koszyka");
+                setAddToCartMessage("Dodano do koszyka");
             } else {
                 const errorResponse = await res.json();
-                setDebug(errorResponse.message);
+                setAddToCartMessage(errorResponse.message);
             }
         });
     }
@@ -34,7 +35,7 @@ export default function ProductListItem(props) {
                 <p>price: {props.productData.price}</p>
                 <p>amount: {props.productData.amount}</p>
                 <p>categoryId: {props.productData.categoryId}</p>
-                <p>{debug}</p>
+                {addToCartMessage && <p>{addToCartMessage}</p>}
             </div>
             <button className="add-to-cart" onClick={addToCart}>Dodaj do koszyka</button>
         </div>

@@ -1,3 +1,4 @@
+import { buildPublicUrl } from "../utils/api";
 import "./CartEntry.css";
 import { useEffect, useState } from "react";
 
@@ -6,8 +7,7 @@ export default function CartEntry(props) {
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
-        const url = "http://" + process.env.REACT_APP_GATEWAY + ":"
-            + process.env.REACT_APP_GATEWAY_PORT + "/api/public/products/" + props.entryData.productId;
+        const url = buildPublicUrl(`/products/${props.entryData.productId}`);
 
         fetch(url, {
             method: "GET",

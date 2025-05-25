@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import { useState, useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { buildGatewayUrl } from "../utils/api";
 
 export default function AdminRoute() {
     const [authChecked, setAuthChecked] = useState(false);
@@ -16,7 +17,7 @@ export default function AdminRoute() {
             return;
         }
 
-        const url = "http://" + process.env.REACT_APP_GATEWAY + ":" + process.env.REACT_APP_GATEWAY_PORT + "/api/validate";
+        const url = buildGatewayUrl("/validate");
         const body = { token: token };
 
         fetch(url,

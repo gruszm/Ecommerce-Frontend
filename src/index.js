@@ -13,6 +13,7 @@ import Logout from './Logout/Logout';
 import AccessDenied from './AccessDenied/AccessDenied';
 import AdminRoute from './AdminRoute/AdminRoute';
 import AdminPanel from './AdminPanel/AdminPanel';
+import ProductManagementPanel from './ProductManagementPanel/ProductManagementPanel';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -30,6 +31,7 @@ root.render(
             <Route path="access-denied" element={<AccessDenied />} />
             <Route element={<AdminRoute />}>
               <Route path="admin-panel" element={<AdminPanel />} />
+              <Route path="admin-panel/product-management-panel" element={<ProductManagementPanel />} />
             </Route>
           </Route>
         </Routes>

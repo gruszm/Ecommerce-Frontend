@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { AuthContext } from "../AuthContext";
+import { buildGatewayUrl } from "../utils/api";
 
 export default function Login(props) {
     const [email, setEmail] = useState("");
@@ -13,7 +14,7 @@ export default function Login(props) {
     const login = async function (event) {
         event.preventDefault();
 
-        const url = "http://" + process.env.REACT_APP_GATEWAY + ":" + process.env.REACT_APP_GATEWAY_PORT + "/api/login";
+        const url = buildGatewayUrl("/login");
         const body = { email: email, password: password };
 
         const response = await fetch(url,
