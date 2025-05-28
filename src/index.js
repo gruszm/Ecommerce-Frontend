@@ -14,6 +14,7 @@ import AccessDenied from './AccessDenied/AccessDenied';
 import AdminRoute from './AdminRoute/AdminRoute';
 import AdminPanel from './AdminPanel/AdminPanel';
 import ProductManagementPanel from './ProductManagementPanel/ProductManagementPanel';
+import NewProductForm from './NewProductForm/NewProductForm';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -32,6 +33,7 @@ root.render(
             <Route element={<AdminRoute />}>
               <Route path="admin-panel" element={<AdminPanel />} />
               <Route path="admin-panel/product-management-panel" element={<ProductManagementPanel />} />
+              <Route path="admin-panel/product-management-panel/new-product" element={<NewProductForm />} />
             </Route>
           </Route>
         </Routes>

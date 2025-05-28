@@ -37,11 +37,13 @@ export default function ProductManagementPanelList(props) {
     return (
         <table style={{ width: "100%" }}>
             <thead>
-                <th>ID produktu</th>
-                <th>ID kategorii</th>
-                <th>Nazwa</th>
-                <th>Cena</th>
-                <th>Ilość</th>
+                <tr>
+                    <th>ID produktu</th>
+                    <th>ID kategorii</th>
+                    <th>Nazwa</th>
+                    <th>Cena</th>
+                    <th>Ilość</th>
+                </tr>
             </thead>
 
             <tbody className="table-body-centered">

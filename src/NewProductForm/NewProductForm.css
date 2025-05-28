@@ -1,0 +1,28 @@
+.new-product-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.new-product-form {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+}
+
+.new-product-form button {
+    align-self: flex-start;
+    width: auto;
+}
+
+.product-form-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.product-form-row input {
+    width: 40%;
+}
