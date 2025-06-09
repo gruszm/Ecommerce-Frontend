@@ -35,11 +35,11 @@ export default function NewProductForm() {
             method: "POST",
             body: formData,
             headers: {
-                "Authorization": `Bearer ${token}`
+                authorization: `Bearer ${token}`
             }
         }).then(res => {
             if (res.ok) {
-                navigate("admin-panel/product-management-panel");
+                navigate("/admin-panel/product-management-panel");
             } else {
                 setErrorMessage("Dodawanie nowego produktu nie powiodło się.");
             }

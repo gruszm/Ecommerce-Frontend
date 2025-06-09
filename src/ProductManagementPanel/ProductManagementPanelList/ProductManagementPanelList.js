@@ -13,12 +13,17 @@ export default function ProductManagementPanelList(props) {
         fetch(url,
             {
                 method: "GET",
-                "Content-Type": "application/json"
+                headers: {
+                    "Content-Type": "application/json"
+                }
             })
             .then(res => res.json())
             .then(res => {
                 setLoading(false);
-                setProductList(res);
+
+                if (res && res.length > 0) {
+                    setProductList(res);
+                }
             })
             .catch(error => {
                 setLoading(false);
@@ -48,7 +53,7 @@ export default function ProductManagementPanelList(props) {
 
             <tbody className="table-body-centered">
                 {productList.map(product =>
-                    <tr>
+                    <tr key={product.id}>
                         <td>{product.id}</td>
                         <td>{product.categoryId}</td>
                         <td>{product.name}</td>

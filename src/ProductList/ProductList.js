@@ -16,7 +16,10 @@ export default function ProductList(props) {
             .then(res => res.json())
             .then(res => {
                 setLoading(false);
-                setProductList(res.filter((product => product.amount > 0))); // Only display the available products
+
+                if (res && res.length > 0) {
+                    setProductList(res.filter((product => product.amount > 0))); // Only display the available products
+                }
             })
             .catch(error => {
                 setLoading(false);
@@ -30,7 +33,8 @@ export default function ProductList(props) {
 
     return (
         <div className="product-list-container">
-            {productList.map(singleProduct => <ProductListItem key={singleProduct.id} productData={singleProduct} />)}
+            {(productList && productList.length > 0) &&
+                productList.map(singleProduct => <ProductListItem key={singleProduct.id} productData={singleProduct} />)}
         </div>
     );
 }

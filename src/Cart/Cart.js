@@ -2,6 +2,7 @@ import "./Cart.css"
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import CartEntry from "../CartEntry/CartEntry";
+import { buildSecureUrl } from "../utils/api";
 
 export default function Cart(props) {
     const [loaded, setLoaded] = useState(false);
@@ -9,8 +10,7 @@ export default function Cart(props) {
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
-        const baseUrl = `http://${process.env.REACT_APP_GATEWAY}:${process.env.REACT_APP_GATEWAY_PORT}`;
-        const cartUrl = baseUrl + "/api/secure/carts/user";
+        const cartUrl = buildSecureUrl("/carts/user");
         const token = Cookies.get("auth-token");
 
         fetch(cartUrl, {

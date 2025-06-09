@@ -9,7 +9,7 @@ export default function Login(props) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
-    const { setAuthenticated } = useContext(AuthContext);
+    const { setAuthenticated, setElevatedRights } = useContext(AuthContext);
 
     const login = async function (event) {
         event.preventDefault();
@@ -29,11 +29,12 @@ export default function Login(props) {
 
         if (response.ok) {
             const parsedData = await response.json();
-            const { token, daysUntilExpires } = parsedData;
+            const { token, daysUntilExpires, hasElevatedRights } = parsedData;
 
             Cookies.set("auth-token", token, { expires: daysUntilExpires });
 
             setAuthenticated(true);
+            setElevatedRights(hasElevatedRights);
             navigate("/", { replace: true });
         }
         else {
