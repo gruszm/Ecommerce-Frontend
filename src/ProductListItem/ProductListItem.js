@@ -1,15 +1,24 @@
 import "./ProductListItem.css";
 import Cookies from "js-cookie";
 import { useState } from "react";
-import { buildSecureUrl } from "../utils/api";
+import { useNavigate } from "react-router-dom";
+import { buildPublicUrl, buildSecureUrl } from "../utils/api";
 
 export default function ProductListItem(props) {
     const [addToCartMessage, setAddToCartMessage] = useState("");
+    const navigate = useNavigate();
 
     function addToCart(event) {
         event.preventDefault();
 
         const token = Cookies.get("auth-token");
+
+        if (!token) {
+            navigate("/login");
+
+            return;
+        }
+
         const url = buildSecureUrl(`/carts/${props.productData.id}/1`);
 
         fetch(url, {
@@ -30,11 +39,12 @@ export default function ProductListItem(props) {
 
     return (
         <div className="product-list-item-container">
+            {(props.productData.imageIds.length > 0)
+                && <img src={buildPublicUrl("/products/images/" + props.productData.imageIds[0])} alt={props.productData.name} className="product-first-image" />}
             <div className="product-list-item-info">
                 <p>name: {props.productData.name}</p>
-                <p>price: {props.productData.price}</p>
+                <p>price: {props.productData.price} zł</p>
                 <p>amount: {props.productData.amount}</p>
-                <p>categoryId: {props.productData.categoryId}</p>
                 {addToCartMessage && <p>{addToCartMessage}</p>}
             </div>
             <button className="add-to-cart" onClick={addToCart}>Dodaj do koszyka</button>

@@ -1,14 +1,49 @@
 import "./NewProductForm.css";
-
+import { buildSecureUrl } from "../utils/api";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 import { useState } from "react";
 
 export default function NewProductForm() {
     const [name, setName] = useState("");
     const [price, setPrice] = useState("");
     const [amount, setAmount] = useState("");
+    const [images, setImages] = useState([]);
+    const [errorMessage, setErrorMessage] = useState("empty error message");
+
+    const navigate = useNavigate();
 
     const handleSubmit = (event) => {
         event.preventDefault();
+
+        const formData = new FormData();
+        const url = buildSecureUrl("/products/");
+        const token = Cookies.get("auth-token");
+
+        formData.append("name", name);
+        formData.append("price", price.replace(",", "."));
+        formData.append("categoryId", 0);
+        formData.append("amount", amount);
+
+        if (images) {
+            for (let i = 0; i < images.length; i++) {
+                formData.append("images", images[i]);
+            }
+        }
+
+        fetch(url, {
+            method: "POST",
+            body: formData,
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }).then(res => {
+            if (res.ok) {
+                navigate("admin-panel/product-management-panel");
+            } else {
+                setErrorMessage("Dodawanie nowego produktu nie powiodło się.");
+            }
+        });
     };
 
     const handleNameChange = (event) => {
@@ -95,8 +130,15 @@ export default function NewProductForm() {
                     <input id="product-amount" type="text" value={amount} onChange={handleAmountChange} placeholder="0" />
                 </div>
 
+                <div className="product-form-row">
+                    <label htmlFor="product-images">Zdjęcia produktu:</label>
+                    <input type="file" id="product-images" multiple accept="image/*" onChange={e => setImages(e.target.files)} />
+                </div>
+
                 <button type="submit">Zatwiedź</button>
             </form>
+
+            <p>{errorMessage}</p>
         </div>
     );
 }

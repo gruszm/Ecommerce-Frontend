@@ -4,7 +4,15 @@
     margin-top: 5px;
     margin-right: 20px;
     margin-left: 20px;
-    padding: 12px;
+    padding: 16px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+}
+
+.product-list-item-info {
+    /* margin-top: auto;
+    margin-bottom: auto; */
+    align-items: center;
 }
 
 .product-list-item-info p {
@@ -15,4 +23,12 @@
 .add-to-cart {
     margin-left: auto;
     align-self: flex-end;
+}
+
+.product-first-image {
+    height: 150px;
+    width: 150px;
+    object-fit: cover;
+    object-position: center;
+    margin-right: 20px;
 }
