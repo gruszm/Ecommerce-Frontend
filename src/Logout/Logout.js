@@ -4,14 +4,15 @@ import { AuthContext } from "../AuthContext";
 import Cookies from "js-cookie";
 
 export default function Logout(props) {
-    const { setAuthenticated } = useContext(AuthContext);
+    const { setAuthenticated, setElevatedRights } = useContext(AuthContext);
     const [done, setDone] = useState(false);
 
     useEffect(() => {
         Cookies.remove("auth-token");
         setAuthenticated(false);
+        setElevatedRights(false);
         setDone(true);
-    }, [setAuthenticated]);
+    }, [setAuthenticated, setElevatedRights]);
 
     if (!done) {
         return <p>Wylogowywanie...</p>

@@ -36,7 +36,7 @@ export default function NavigationBar() {
                     {!isAuthenticated && <li><Link to="/login">Zaloguj</Link></li>}
                     {isAuthenticated && <li><Link to="/logout">Wyloguj</Link></li>}
                     <li><Link to="/cart">Koszyk</Link></li>
-                    {hasElevatedRights && <li><Link to="/admin-panel">Panel administratora</Link></li>}
+                    {(isAuthenticated && hasElevatedRights) ? <li><Link to="/admin-panel">Panel administratora</Link></li> : null}
                 </ul>
             </nav>
             <Outlet />
