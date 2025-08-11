@@ -40,7 +40,7 @@ export default function Cart(props) {
                 <p>Koszyk:</p>
             </div>
             {errorMessage === "" ? null : <p>{errorMessage}</p>}
-            {cart.cartEntries.map(entry => <CartEntry key={entry.id} entryData={entry} />)}
+            {cart !== null && cart.cartEntries.map(entry => <CartEntry key={entry.id} entryData={entry} />)}
         </div>
     );
 }
