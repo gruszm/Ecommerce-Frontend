@@ -8,6 +8,7 @@ import { buildGatewayUrl } from "../utils/api";
 export default function NavigationBar() {
     const { isAuthenticated, setAuthenticated, setElevatedRights, hasElevatedRights } = useContext(AuthContext);
     const [dropdownMenuActive, setDropdownMenuActive] = useState(false);
+    const closeDropdownMenu = () => setDropdownMenuActive(false);
     const dropdownMenuRef = useRef(null);
 
     const handleClickOutsideDropdown = (event) => {
@@ -65,9 +66,10 @@ export default function NavigationBar() {
                     {dropdownMenuActive &&
                         <>
                             <ul className="dropdown-list">
-                                <li>Ustawienia konta</li>
-                                <li>Ustawienia konta2</li>
-                                <li>Ustawienia konta3</li>
+                                <li><Link to="addresses" onClick={closeDropdownMenu}>Moje adresy</Link></li>
+                                <li><Link to="#" onClick={closeDropdownMenu}>Ustawienia konta</Link></li>
+                                <li><Link to="#" onClick={closeDropdownMenu}>Ustawienia konta2</Link></li>
+                                <li><Link to="#" onClick={closeDropdownMenu}>Ustawienia konta3</Link></li>
                             </ul>
                         </>
                     }

@@ -15,6 +15,8 @@ import AdminRoute from './AdminRoute/AdminRoute';
 import AdminPanel from './AdminPanel/AdminPanel';
 import ProductManagementPanel from './ProductManagementPanel/ProductManagementPanel';
 import NewProductForm from './NewProductForm/NewProductForm';
+import AddressList from './AddressList/AddressList';
+import NewAddressForm from './AddressList/NewAddressForm/NewAddressForm';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -28,6 +30,8 @@ root.render(
             <Route path="logout" element={<Logout />} />
             <Route element={<ProtectedRoute />}>
               <Route path="cart" element={<Cart />} />
+              <Route path="addresses" element={<AddressList />} />
+              <Route path="addresses/new-address-form" element={<NewAddressForm />} />
             </Route>
             <Route path="access-denied" element={<AccessDenied />} />
             <Route element={<AdminRoute />}>

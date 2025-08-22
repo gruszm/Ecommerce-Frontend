@@ -111,26 +111,26 @@ export default function NewProductForm() {
     };
 
     return (
-        <div className="new-product-container">
+        <div className="new-product-form-container">
             <form onSubmit={handleSubmit} className="new-product-form">
                 <span style={{ "marginBottom": "12px" }}>Dodawanie nowego produktu</span>
 
-                <div className="product-form-row">
+                <div className="new-product-form-row">
                     <label htmlFor="product-name">Podaj nazwę:</label>
                     <input id="product-name" type="text" value={name} onChange={handleNameChange} placeholder="Nazwa produktu" />
                 </div>
 
-                <div className="product-form-row">
+                <div className="new-product-form-row">
                     <label htmlFor="product-price">Podaj cenę:</label>
                     <input id="product-price" type="text" value={price} onChange={handlePriceChange} placeholder="0,00" />
                 </div>
 
-                <div className="product-form-row">
+                <div className="new-product-form-row">
                     <label htmlFor="product-amount">Ilość początkowa:</label>
                     <input id="product-amount" type="text" value={amount} onChange={handleAmountChange} placeholder="0" />
                 </div>
 
-                <div className="product-form-row">
+                <div className="new-product-form-row">
                     <label htmlFor="product-images">Zdjęcia produktu:</label>
                     <input type="file" id="product-images" multiple accept="image/*" onChange={e => setImages(e.target.files)} />
                 </div>

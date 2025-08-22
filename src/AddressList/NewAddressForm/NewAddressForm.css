@@ -1,21 +1,21 @@
-.new-product-form-container {
+.new-address-form-container {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.new-product-form {
+.new-address-form {
     display: flex;
     flex-direction: column;
     width: 30%;
 }
 
-.new-product-form button {
+.new-address-form button {
     align-self: flex-start;
     width: auto;
 }
 
-.new-product-form-row {
+.new-address-form-row {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -23,6 +23,6 @@
     margin-bottom: 4px;
 }
 
-.new-product-form-row input {
+.new-address-form-row input {
     width: 40%;
 }
