@@ -1,10 +1,16 @@
 import "./NewAddressForm.css";
 import { buildSecureUrl } from "../../utils/api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
+// Regexes
+const postalCodeRegex = /^\d{2}-?(?!000)\d{3}$/;
+const textRegex = /^[\p{L}\s-]*$/u;
+const numberRegex = /^[1-9][0-9]*$|^$/;
+
 export default function NewAddressForm(props) {
+    // Hooks
     const navigate = useNavigate();
     const [street, setStreet] = useState("");
     const [houseNumber, setHouseNumber] = useState("");
@@ -13,13 +19,32 @@ export default function NewAddressForm(props) {
     const [city, setCity] = useState("");
     const [voivodeship, setVoivodeship] = useState("");
     const [country, setCountry] = useState("");
-    const [submitDisabled, setSubmitDisabled] = useState(true);
+    const [submitEnabled, setSubmitEnabled] = useState(true);
     const [errorMsg, setErrorMsg] = useState("");
 
-    const postalCodeRegex = /^\d{2}-?(?!000)\d{3}$/;
-    const textRegex = /^[\p{L}\s-]*$/u;
-    const numberRegex = /^[1-9][0-9]*$|^$/;
+    // Validate form 
+    useEffect(() => {
+        const isStreetValid = street.length > 0 && textRegex.test(street);
+        const isHouseNumberValid = houseNumber.length > 0 && numberRegex.test(houseNumber);
+        const isApartmentNumberValid = apartmentNumber.length === 0 || numberRegex.test(apartmentNumber);
+        const isPostalCodeValid = postalCodeRegex.test(postalCode);
+        const isCityValid = city.length > 0 && textRegex.test(city);
+        const isVoivodeshipValid = voivodeship.length > 0 && textRegex.test(voivodeship);
+        const isCountryValid = country.length > 0 && textRegex.test(country);
 
+        const formValid =
+            isStreetValid &&
+            isHouseNumberValid &&
+            isApartmentNumberValid &&
+            isPostalCodeValid &&
+            isCityValid &&
+            isVoivodeshipValid &&
+            isCountryValid;
+
+        setSubmitEnabled(formValid);
+    }, [street, houseNumber, apartmentNumber, postalCode, city, voivodeship, country]);
+
+    // Handlers
     const handleSubmit = (event) => {
         event.preventDefault();
 
@@ -87,16 +112,10 @@ export default function NewAddressForm(props) {
         // Check, if the postal code is filled
         if (numberOfDigits <= 5) {
             setPostalCode(newValue);
-
-            if (postalCodeRegex.test(newValue)) {
-                setSubmitDisabled(false);
-            }
-            else {
-                setSubmitDisabled(true);
-            }
         }
     };
 
+    // Front
     return (
         <div>
             <div className="new-address-form-container">
@@ -139,7 +158,7 @@ export default function NewAddressForm(props) {
                         <input id="address-country" type="text" value={country} autoComplete="country-name" onChange={(event) => handleChange(event, setCountry, textRegex)} />
                     </div>
 
-                    <button type="submit" disabled={submitDisabled} onClick={handleSubmit} style={{ marginTop: "12px" }}>Zatwierdź</button>
+                    <button type="submit" disabled={!submitEnabled} onClick={handleSubmit} style={{ marginTop: "12px" }}>Zatwierdź</button>
                 </form>
 
                 <span>{errorMsg}</span>

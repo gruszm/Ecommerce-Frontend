@@ -43,10 +43,13 @@ export default function CartEntry(props) {
     if (productData) {
         return (
             <div className="cart-entry-container">
-                <p>Nazwa produktu: {productData.name}</p>
-                <p>Cena: {productData.price} zł</p>
-                <p>Ilość: {props.entryData.quantity}</p>
-                <p>Kwota: {getSumAsText(productData.price, props.entryData.quantity)} zł</p>
+                <div className="cart-entry-info">
+                    <span>Nazwa produktu: {productData.name}</span>
+                    <span>Cena: {getSumAsText(productData.price, 1)} zł</span>
+                    <span>Ilość: {props.entryData.quantity}</span>
+                    <span>Kwota: {getSumAsText(productData.price, props.entryData.quantity)} zł</span>
+                </div>
+                <img src={buildPublicUrl("/products/images/" + productData.imageIds[0])} alt={productData.name} />
             </div>
         );
     }
