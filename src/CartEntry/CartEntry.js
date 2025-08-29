@@ -49,7 +49,9 @@ export default function CartEntry(props) {
                     <span>Ilość: {props.entryData.quantity}</span>
                     <span>Kwota: {getSumAsText(productData.price, props.entryData.quantity)} zł</span>
                 </div>
-                <img src={buildPublicUrl("/products/images/" + productData.imageIds[0])} alt={productData.name} />
+                
+                {(productData.imageIds.length > 0) &&
+                    <img src={buildPublicUrl("/products/images/" + productData.imageIds[0])} alt={productData.name} />}
             </div>
         );
     }
