@@ -38,7 +38,7 @@ export default function NavigationBar() {
                 setElevatedRights(res.hasElevatedRights);
             })
             .catch(error => {
-                console.error(error.message);
+                console.log(error.message);
             });
 
         document.addEventListener("click", handleClickOutsideDropdown);
