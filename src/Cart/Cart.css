@@ -11,3 +11,15 @@
 .cart-text p {
     align-self: flex-start;
 }
+
+.cart-info {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    align-items: flex-end;
+    margin-bottom: 200px;
+}
+
+.cart-info button {
+    width: fit-content;
+}

@@ -1,0 +1,28 @@
+.new-delivery-method-form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.new-delivery-method-form {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+}
+
+.new-delivery-method-form button {
+    align-self: flex-start;
+    width: auto;
+}
+
+.new-delivery-method-form-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.new-delivery-method-form-row input {
+    width: 40%;
+}

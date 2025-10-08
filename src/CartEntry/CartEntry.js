@@ -7,9 +7,9 @@ function getSumAsText(price, quantity) {
     // Add a comma at the third to last position
     const sum = price * quantity;
     const sumAsText = (sum * 100).toString();
-    const sumtAsTextWithDot = sumAsText.slice(0, -2) + "," + sumAsText.slice(-2);
+    const sumAsTextWithComma = sumAsText.slice(0, -2) + "," + sumAsText.slice(-2);
 
-    return sumtAsTextWithDot;
+    return sumAsTextWithComma;
 }
 
 export default function CartEntry(props) {

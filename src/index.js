@@ -17,6 +17,10 @@ import ProductManagementPanel from './ProductManagementPanel/ProductManagementPa
 import NewProductForm from './NewProductForm/NewProductForm';
 import AddressList from './AddressList/AddressList';
 import NewAddressForm from './AddressList/NewAddressForm/NewAddressForm';
+import SelectAddress from './SelectAddress/SelectAddress';
+import OrderSummary from './OrderSummary/OrderSummary';
+import DeliveryMethodManagementPanel from './DeliveryMethodManagementPanel/DeliveryMethodManagementPanel';
+import NewDeliveryMethodethodForm from './NewDeliveryMethodForm/NewDeliveryMethodForm';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -32,12 +36,16 @@ root.render(
               <Route path="cart" element={<Cart />} />
               <Route path="addresses" element={<AddressList />} />
               <Route path="addresses/new-address-form" element={<NewAddressForm />} />
+              <Route path="select-address" element={<SelectAddress />} />
+              <Route path="order-summary" element={<OrderSummary />} />
             </Route>
             <Route path="access-denied" element={<AccessDenied />} />
             <Route element={<AdminRoute />}>
               <Route path="admin-panel" element={<AdminPanel />} />
               <Route path="admin-panel/product-management-panel" element={<ProductManagementPanel />} />
               <Route path="admin-panel/product-management-panel/new-product" element={<NewProductForm />} />
+              <Route path="admin-panel/delivery-method-management-panel" element={<DeliveryMethodManagementPanel />} />
+              <Route path="admin-panel/delivery-method-management-panel/new-method" element={<NewDeliveryMethodethodForm />} />
             </Route>
           </Route>
         </Routes>

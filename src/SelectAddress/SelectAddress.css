@@ -1,0 +1,50 @@
+.address-list-container {
+    display: flex;
+    flex-direction: column;
+    padding: 0px 200px;
+    margin-bottom: 200px;
+}
+
+.address-list-text {
+    margin: 0px;
+}
+
+.address-list-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.address-list-header a {
+    text-decoration: none;
+    color: black;
+}
+
+.address-list-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.address-list {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 40px;
+}
+
+.address-single {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: 12px;
+    border-color: black;
+    border-width: 4px;
+    border-style: solid;
+    width: 300px;
+}
+
+.address-single button {
+    width: fit-content;
+    align-self: center;
+    margin-top: 10px;
+}

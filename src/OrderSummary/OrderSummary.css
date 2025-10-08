@@ -1,0 +1,70 @@
+.order-summary-container {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin: 0px auto;
+}
+
+.order-item-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.order-item {
+    display: flex;
+    flex-direction: row;
+    border: 4px solid black;
+    border-radius: 12px;
+    justify-content: space-between;
+    padding: 12px;
+}
+
+.order-item-desc {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 20px;
+}
+
+.order-item:not(:last-of-type) {
+    margin-bottom: 50px;
+}
+
+.order-item-image {
+    width: 140px;
+    height: 140px;
+    align-self: center;
+    margin-right: 80px;
+}
+
+.order-delivery-method {
+    display: flex;
+    flex-direction: column;
+}
+
+.order-delivery-method-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.order-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 60px;
+}
+
+.order-info button {
+    height: fit-content;
+    align-self: center;
+}
+
+.address-single {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: 12px;
+    border-color: black;
+    border-width: 4px;
+    border-style: solid;
+    width: 300px;
+}
