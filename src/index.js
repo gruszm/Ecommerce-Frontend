@@ -21,6 +21,7 @@ import SelectAddress from './SelectAddress/SelectAddress';
 import OrderSummary from './OrderSummary/OrderSummary';
 import DeliveryMethodManagementPanel from './DeliveryMethodManagementPanel/DeliveryMethodManagementPanel';
 import NewDeliveryMethodethodForm from './NewDeliveryMethodForm/NewDeliveryMethodForm';
+import OrderSuccess from './OrderSummary/OrderSuccess/OrderSuccess';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -47,6 +48,7 @@ root.render(
               <Route path="admin-panel/delivery-method-management-panel" element={<DeliveryMethodManagementPanel />} />
               <Route path="admin-panel/delivery-method-management-panel/new-method" element={<NewDeliveryMethodethodForm />} />
             </Route>
+            <Route path="success" element={<OrderSuccess />} />
           </Route>
         </Routes>
       </AuthProvider>

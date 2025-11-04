@@ -146,11 +146,13 @@ export default function OrderSummary(props) {
             }
         ).then(async res => {
             if (res.ok) {
-                navigate("/");
-            } else {
-                const errorMessage = await res.json();
+                const { url } = await res.json();
 
-                setErrorMessage("Wystąpił błąd przy składaniu zamówienia: " + errorMessage)
+                window.location.href = url;
+            } else {
+                const errorObj = await res.json();
+
+                setErrorMessage("Wystąpił błąd przy składaniu zamówienia: " + errorObj.message)
             }
         }
         ).catch(error => {

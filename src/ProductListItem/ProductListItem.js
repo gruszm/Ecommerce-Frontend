@@ -42,9 +42,9 @@ export default function ProductListItem(props) {
             {(props.productData.imageIds.length > 0)
                 && <img src={buildPublicUrl("/products/images/" + props.productData.imageIds[0])} alt={props.productData.name} className="product-first-image" />}
             <div className="product-list-item-info">
-                <p>name: {props.productData.name}</p>
-                <p>price: {props.productData.price} zł</p>
-                <p>amount: {props.productData.amount}</p>
+                <p>Nazwa: {props.productData.name}</p>
+                <p>Cena: {props.productData.price} zł</p>
+                <p>Ilość: {props.productData.amount}</p>
                 {addToCartMessage && <p>{addToCartMessage}</p>}
             </div>
             <button className="add-to-cart" onClick={addToCart}>Dodaj do koszyka</button>

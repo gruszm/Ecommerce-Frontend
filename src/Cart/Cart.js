@@ -20,16 +20,26 @@ export default function Cart(props) {
                 authorization: `Bearer ${token}`,
                 "Content-Type": "application/json"
             }
-        })
-            .then(res => res.json())
-            .then(res => {
-                setCart(res);
-                setLoaded(true);
-            })
-            .catch(error => {
-                setErrorMessage("Nie udało się załadować zawartości koszyka");
-                setLoaded(true);
-            });
+        }).then(res => {
+            setLoaded(true);
+
+            if (res.status === 404) {
+                setErrorMessage("Twój koszyk jest pusty");
+            }
+            else {
+                return res.json();
+            }
+        }).then(res => {
+            setCart(res);
+            setLoaded(true);
+
+            if (res.cartEntries?.length === 0) {
+                setErrorMessage("Twój koszyk jest pusty");
+            }
+        }).catch(error => {
+            setErrorMessage("Nie udało się załadować zawartości koszyka");
+            setLoaded(true);
+        });
     }, []);
 
     if (!loaded) {
@@ -43,11 +53,11 @@ export default function Cart(props) {
             </div>
 
             {errorMessage === "" ? null : <p>{errorMessage}</p>}
-            {cart !== null && cart.cartEntries.map(entry => <CartEntry key={entry.id} entryData={entry} />)}
+            {cart?.cartEntries?.map(entry => <CartEntry key={entry.id} entryData={entry} />)}
 
             <div className="cart-info">
                 <p>Razem: {amount} zł</p>
-                
+
                 {(cart?.cartEntries.length > 0) &&
                     <Link to="/select-address">Dostawa i płatność</Link>}
             </div>

@@ -23,6 +23,7 @@
 .add-to-cart {
     margin-left: auto;
     align-self: flex-end;
+    white-space: nowrap;
 }
 
 .product-first-image {
