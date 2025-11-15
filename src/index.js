@@ -1,6 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 import reportWebVitals from './reportWebVitals';
 import ProductList from './ProductList/ProductList';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -22,35 +26,38 @@ import OrderSummary from './OrderSummary/OrderSummary';
 import DeliveryMethodManagementPanel from './DeliveryMethodManagementPanel/DeliveryMethodManagementPanel';
 import NewDeliveryMethodethodForm from './NewDeliveryMethodForm/NewDeliveryMethodForm';
 import OrderSuccess from './OrderSummary/OrderSuccess/OrderSuccess';
+import { SnackbarProvider } from 'notistack';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<NavigationBar />}>
-            <Route index element={<ProductList />} />
-            <Route path="login" element={<Login />} />
-            <Route path="logout" element={<Logout />} />
-            <Route element={<ProtectedRoute />}>
-              <Route path="cart" element={<Cart />} />
-              <Route path="addresses" element={<AddressList />} />
-              <Route path="addresses/new-address-form" element={<NewAddressForm />} />
-              <Route path="select-address" element={<SelectAddress />} />
-              <Route path="order-summary" element={<OrderSummary />} />
+        <SnackbarProvider maxSnack={2}>
+          <Routes>
+            <Route path="/" element={<NavigationBar />}>
+              <Route index element={<ProductList />} />
+              <Route path="login" element={<Login />} />
+              <Route path="logout" element={<Logout />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="cart" element={<Cart />} />
+                <Route path="addresses" element={<AddressList />} />
+                <Route path="addresses/new-address-form" element={<NewAddressForm />} />
+                <Route path="select-address" element={<SelectAddress />} />
+                <Route path="order-summary" element={<OrderSummary />} />
+              </Route>
+              <Route path="access-denied" element={<AccessDenied />} />
+              <Route element={<AdminRoute />}>
+                <Route path="admin-panel" element={<AdminPanel />} />
+                <Route path="admin-panel/product-management-panel" element={<ProductManagementPanel />} />
+                <Route path="admin-panel/product-management-panel/new-product" element={<NewProductForm />} />
+                <Route path="admin-panel/delivery-method-management-panel" element={<DeliveryMethodManagementPanel />} />
+                <Route path="admin-panel/delivery-method-management-panel/new-method" element={<NewDeliveryMethodethodForm />} />
+              </Route>
+              <Route path="success" element={<OrderSuccess />} />
             </Route>
-            <Route path="access-denied" element={<AccessDenied />} />
-            <Route element={<AdminRoute />}>
-              <Route path="admin-panel" element={<AdminPanel />} />
-              <Route path="admin-panel/product-management-panel" element={<ProductManagementPanel />} />
-              <Route path="admin-panel/product-management-panel/new-product" element={<NewProductForm />} />
-              <Route path="admin-panel/delivery-method-management-panel" element={<DeliveryMethodManagementPanel />} />
-              <Route path="admin-panel/delivery-method-management-panel/new-method" element={<NewDeliveryMethodethodForm />} />
-            </Route>
-            <Route path="success" element={<OrderSuccess />} />
-          </Route>
-        </Routes>
+          </Routes>
+        </SnackbarProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

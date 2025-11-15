@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 export default function Cart(props) {
     const [loaded, setLoaded] = useState(false);
     const [cart, setCart] = useState(null);
-    const [amount, setAmount] = useState(0);
+    const [amount] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
