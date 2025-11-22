@@ -91,7 +91,10 @@ export default function ProductList() {
         <Container>
             <Stack spacing={4} sx={{ pb: 4 }}>
                 {productList.map(p => (
-                    <Card key={p.id} elevation={4}>
+                    <Card key={p.id} elevation={4} sx={{
+                        "&:hover": { bgcolor: "#F7F7F7" },
+                        transition: "0.2s"
+                    }}>
                         <Box sx={{
                             display: "flex",
                             flexDirection: { xs: "column", sm: "row" },
