@@ -2,7 +2,7 @@ import "./Login.css";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { AuthContext } from "../AuthContext";
+import { AuthContext } from "../AuthContext/AuthContext";
 import { buildGatewayUrl } from "../utils/api";
 
 export default function Login(props) {

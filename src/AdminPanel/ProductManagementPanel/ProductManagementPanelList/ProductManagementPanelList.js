@@ -1,6 +1,6 @@
 import "./ProductManagementPanelList.css";
 import { useState, useEffect } from "react";
-import { buildPublicUrl } from "../../utils/api";
+import { buildPublicUrl } from "../../../utils/api";
 
 export default function ProductManagementPanelList(props) {
     const [loading, setLoading] = useState(true);

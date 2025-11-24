@@ -1,6 +1,6 @@
 import "./DeliveryMethodManagementPanelList.css";
 import { useState, useEffect } from "react";
-import { buildPublicUrl } from "../../utils/api";
+import { buildPublicUrl } from "../../../utils/api";
 
 export default function DeliveryMethodManagementPanelList(props) {
     const [loading, setLoading] = useState(true);

@@ -1,7 +1,7 @@
 import "./NavigationBar.css";
 import { Link, Outlet } from "react-router-dom";
 import { useContext, useEffect, useState, useRef } from "react";
-import { AuthContext } from "../AuthContext";
+import { AuthContext } from "../AuthContext/AuthContext";
 import Cookies from "js-cookie";
 import { buildGatewayUrl } from "../utils/api";
 

@@ -1,5 +1,5 @@
 import "./NewDeliveryMethodForm.css";
-import { buildSecureUrl } from "../utils/api";
+import { buildSecureUrl } from "../../../utils/api";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useState } from "react";

@@ -108,7 +108,15 @@ export default function ProductList() {
                             </CardContent>
                             <CardMedia
                                 component="img"
-                                sx={{ p: 2, width: { xs: 300, sm: 200 } }}
+                                sx={{
+                                    p: 2,
+                                    width: { xs: 300, sm: 200 },
+                                    height: { xs: 300, sm: 200 },
+                                    transition: "0.5s ease",
+                                    "&:hover": {
+                                        transform: "scale(1.05)"
+                                    }
+                                }}
                                 image={(p.imageIds.length > 0) && buildPublicUrl("/products/images/" + p.imageIds[0])}
                                 alt={p.name}
                             />

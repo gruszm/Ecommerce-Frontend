@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext";
+import { AuthContext } from "../AuthContext/AuthContext";
 import Cookies from "js-cookie";
 
 export default function Logout(props) {
