@@ -102,14 +102,14 @@ export default function ProductList() {
                             justifyContent: { xs: "flex-start", sm: "space-between" }
                         }}>
                             <CardContent sx={{ textAlign: { xs: "center", sm: "start" } }}>
-                                <Typography variant="h5">{p.name}</Typography>
-                                <Typography>Ilość sztuk: {p.amount}</Typography>
-                                <Typography>{p.price.replace(".", ",")} zł</Typography>
+                                <Typography variant="h5" fontWeight="500" gutterBottom>{p.name}</Typography>
+                                <Typography color="text.secondary">Ilość sztuk: {p.amount}</Typography>
+                                <Typography color="text.secondary">{p.price.replace(".", ",")} zł</Typography>
                             </CardContent>
                             <CardMedia
                                 component="img"
                                 sx={{
-                                    p: 2,
+                                    m: { xs: 1, sm: 2 },
                                     width: { xs: 300, sm: 200 },
                                     height: { xs: 300, sm: 200 },
                                     transition: "0.5s ease",
@@ -121,19 +121,16 @@ export default function ProductList() {
                                 alt={p.name}
                             />
                         </Box>
-                        <Box sx={{
+                        <CardActions sx={{
                             display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center"
+                            flexDirection: "column",
+                            alignItems: { xs: "center", sm: "flex-start" }
                         }}>
-                            <CardActions>
-                                <Button startIcon={<ShoppingCartIcon />} onClick={(e) => addToCart(e, p.id, p.name)}>Dodaj do koszyka</Button>
-                            </CardActions>
-                        </Box>
+                            <Button startIcon={<ShoppingCartIcon />} onClick={(e) => addToCart(e, p.id, p.name)}>Dodaj do koszyka</Button>
+                        </CardActions>
                     </Card>
                 ))}
             </Stack>
-        </Container >
+        </Container>
     );
 }
