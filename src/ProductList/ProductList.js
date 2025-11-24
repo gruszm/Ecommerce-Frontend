@@ -89,7 +89,7 @@ export default function ProductList() {
 
     return (
         <Container>
-            <Stack spacing={4} sx={{ pb: 4 }}>
+            <Stack spacing={4} sx={{ mb: 4 }}>
                 {productList.map(p => (
                     <Card key={p.id} elevation={4} sx={{
                         "&:hover": { bgcolor: "#F7F7F7" },
@@ -98,13 +98,17 @@ export default function ProductList() {
                         <Box sx={{
                             display: "flex",
                             flexDirection: { xs: "column", sm: "row" },
-                            alignItems: { xs: "center", sm: "flex-start" },
-                            justifyContent: { xs: "flex-start", sm: "space-between" }
+                            justifyContent: { xs: "flex-start", sm: "space-between" },
+                            alignItems: { xs: "center", sm: "initial" }
                         }}>
-                            <CardContent sx={{ textAlign: { xs: "center", sm: "start" } }}>
-                                <Typography variant="h5" fontWeight="500" gutterBottom>{p.name}</Typography>
-                                <Typography color="text.secondary">Ilość sztuk: {p.amount}</Typography>
-                                <Typography color="text.secondary">{p.price.replace(".", ",")} zł</Typography>
+                            <CardContent sx={{ display: "flex", flexDirection: "column" }}>
+                                <Box sx={{ textAlign: { xs: "center", sm: "start" } }}>
+                                    <Typography variant="h5" fontWeight="500" gutterBottom>{p.name}</Typography>
+                                    <Typography color="text.secondary">Ilość sztuk: {p.amount}</Typography>
+                                    <Typography color="text.secondary">{p.price.replace(".", ",")} zł za sztukę</Typography>
+                                </Box>
+
+                                <Button sx={{ display: { xs: "none", sm: "inline-flex" }, marginTop: "auto" }} startIcon={<ShoppingCartIcon />} onClick={(e) => addToCart(e, p.id, p.name)}>Dodaj do koszyka</Button>
                             </CardContent>
                             <CardMedia
                                 component="img"
@@ -120,14 +124,10 @@ export default function ProductList() {
                                 image={(p.imageIds.length > 0) && buildPublicUrl("/products/images/" + p.imageIds[0])}
                                 alt={p.name}
                             />
+                            <CardActions sx={{ display: { xs: "inline-flex", sm: "none" } }}>
+                                <Button startIcon={<ShoppingCartIcon />} onClick={(e) => addToCart(e, p.id, p.name)}>Dodaj do koszyka</Button>
+                            </CardActions>
                         </Box>
-                        <CardActions sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: { xs: "center", sm: "flex-start" }
-                        }}>
-                            <Button startIcon={<ShoppingCartIcon />} onClick={(e) => addToCart(e, p.id, p.name)}>Dodaj do koszyka</Button>
-                        </CardActions>
                     </Card>
                 ))}
             </Stack>
