@@ -28,5 +28,5 @@ export function buildSecureUrl(path) {
 }
 
 export function getPriceAsText(price) {
-    return price.toFixed(2).replace(".", ",");
+    return Number(price).toFixed(2).replace(".", ",");
 }

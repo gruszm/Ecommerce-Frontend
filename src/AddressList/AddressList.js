@@ -69,8 +69,20 @@ export default function AddressList(props) {
 
     return (
         <Container>
+            <Typography variant="h2" gutterBottom>Twoje adresy</Typography>
+
             <ClickAwayListener mouseEvent="onMouseDown" touchEvent="onTouchStart" onClickAway={closePopper}>
-                <Popper open={Boolean(popperData.anchorEl)} anchorEl={popperData.anchorEl} placement="bottom" transition>
+                <Popper
+                    open={Boolean(popperData.anchorEl)}
+                    anchorEl={popperData.anchorEl}
+                    placement="bottom"
+                    transition
+                    modifiers={[
+                        {
+                            name: "flip",
+                            enabled: false
+                        }
+                    ]}>
                     {({ TransitionProps }) => (
                         <Zoom {...TransitionProps} style={{ transformOrigin: "center top" }}>
                             <Box

@@ -101,10 +101,10 @@ export default function ProductList() {
                             justifyContent: { xs: "flex-start", sm: "space-between" },
                             alignItems: { xs: "center", sm: "initial" }
                         }}>
-                            <CardContent sx={{ display: "flex", flexDirection: "column" }}>
+                            <CardContent sx={{ display: "flex", flexDirection: "column", alignItems: { xs: "initial", sm: "flex-start" } }}>
                                 <Box sx={{ textAlign: { xs: "center", sm: "start" } }}>
                                     <Typography variant="h5" fontWeight="500" gutterBottom>{p.name}</Typography>
-                                    <Typography color="text.secondary">Ilość sztuk: {p.amount}</Typography>
+                                    <Typography color="text.secondary">Ilość: {p.amount}</Typography>
                                     <Typography color="text.secondary">{p.price.replace(".", ",")} zł za sztukę</Typography>
                                 </Box>
 

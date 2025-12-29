@@ -1,139 +1,79 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import "./OrderSummary.css";
-import { useState, useEffect } from "react";
-import { buildGatewayUrl, buildPublicUrl, buildSecureUrl } from "../utils/api.js";
+import { useState, useEffect, useRef, useMemo, memo } from "react";
 import Cookies from "js-cookie";
-import OrderSummaryCartEntry from "./OrderSummaryCartEntry/OrderSummaryCartEntry.js";
+import { buildGatewayUrl, buildPublicUrl, buildSecureUrl, getPriceAsText } from "../utils/api";
+import Container from "@mui/material/Container";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
+import CircularProgress from '@mui/material/CircularProgress';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import StoreIcon from '@mui/icons-material/Store';
+import Box from "@mui/material/Box";
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import AddressDialog from "./AddressDialog/AddressDialog";
+import { styled } from "@mui/material/styles";
+import { Divider, IconButton, Tooltip } from "@mui/material";
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import Button from "@mui/material/Button";
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 
-export default function OrderSummary(props) {
-    const location = useLocation();
+function PriceRow({ label, price }) {
+    return (
+        <Box sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between"
+        }}>
+            <Typography>{label}:</Typography>
+            <Typography>{getPriceAsText(price)}&nbsp;zł</Typography>
+        </Box>
+    );
+}
+
+function OrderSummary(props) {
     const navigate = useNavigate();
-    const [errorMessage, setErrorMessage] = useState("");
-    const [deliveryMethods, setDeliveryMethods] = useState([]);
-    const [selectedDeliveryMethodId, setSelectedDeliveryMethodId] = useState(null);
-    const [selectedDeliveryMethodPrice, setSelectedDeliveryMethodPrice] = useState(0);
-    const [addressData, setAddressData] = useState(null);
+    const location = useLocation();
+    const { enqueueSnackbar } = useSnackbar();
+
+    const deliveryMethodIdRef = useRef(location.state.deliveryMethodId);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [addresses, setAddresses] = useState([]);
+    const [deliveryMethod, setDeliveryMethod] = useState(null);
     const [cartEntries, setCartEntries] = useState([]);
+    const [selectedAddressId, setSelectedAddressId] = useState(-1);
 
-    useEffect(() => {
-        const token = Cookies.get("auth-token");
+    const selectedAddress = useMemo(() => {
+        const addr = addresses.find(a => a.id === selectedAddressId);
 
-        if (!token) {
-            navigate("login");
-        }
-        else {
-            const fetchData = async () => {
+        return addr;
+    }, [addresses, selectedAddressId]);
 
-                const addressId = location.state && location.state.addressId;
-                const addressUrl = buildSecureUrl(`/profiles/addresses/${addressId}`);
-                const deliveryMethodsUrl = buildPublicUrl("/delivery");
-                const cartUrl = buildSecureUrl(`/carts/user`);
-                let tempCartEntries = [];
+    const cartSum = useMemo(() => cartEntries.reduce((sum, currentEntry) => sum + currentEntry.totalPrice, 0), [cartEntries]);
 
-                // Get the product IDs from the cart
-                await fetch(cartUrl,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json"
-                        }
-                    }
-                ).then(res => res.json()
-                ).then(res => {
-                    tempCartEntries = res.cartEntries;
-                }
-                ).catch(error => {
-                    setErrorMessage(error.message);
-                    console.log(error.message);
-                });
+    const sumOfLoaded = useMemo(() => {
+        let sumOfLoaded = 0;
 
-                // Retrieve the product data for each cart entry
-                const productPromises = tempCartEntries.map(async entry => {
-                    const productUrl = buildPublicUrl(`/products/${entry.productId}`);
+        sumOfLoaded += (addresses && addresses.length > 0) ? 1 : 0;
+        sumOfLoaded += (deliveryMethod) ? 1 : 0;
+        sumOfLoaded += (cartEntries && cartEntries.length > 0) ? 1 : 0;
 
-                    const res = await fetch(productUrl,
-                        {
-                            method: "GET",
-                            headers: {
-                                "Content-Type": "application/json"
-                            }
-                        }
-                    );
+        return sumOfLoaded;
+    }, [addresses, deliveryMethod, cartEntries]);
 
-                    return res.json();
-                });
+    const handleEditAddress = () => {
+        setDialogOpen(true);
+    };
 
-                const products = await Promise.all(productPromises);
-
-                // Add the product data to each cart entry
-                tempCartEntries = tempCartEntries.map((entry, index) => {
-                    return {
-                        ...entry,
-                        name: products[index].name,
-                        price: products[index].price,
-                        imageIds: products[index].imageIds
-                    };
-                });
-
-                setCartEntries(tempCartEntries);
-
-                // Get the address picked in the previous step
-                await fetch(addressUrl,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json"
-                        }
-                    }
-                ).then(res => res.json()
-                ).then(res => {
-                    setAddressData(res);
-                }
-                ).catch(error => {
-                    setErrorMessage(error.message);
-                    console.log(error.message);
-                });
-
-                // Get the delivery methods
-                await fetch(deliveryMethodsUrl,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    }
-                ).then(res => res.json()
-                ).then(res => {
-                    if (res.length === 0) {
-                        setErrorMessage("Błąd! Nie istnieje żadna opcja dostawy.");
-                    }
-                    else {
-                        setDeliveryMethods(res);
-                    }
-                }
-                ).catch(error => {
-                    setErrorMessage(error.message);
-                    console.log(error.message);
-                });
-            }
-
-            fetchData();
-        }
-    }, [location.state, navigate]);
-
-    const handleOrder = () => {
+    const handleConfirmOrder = () => {
         const orderUrl = buildGatewayUrl("/order");
-        const addressId = location.state && location.state.addressId;
-        const body = { addressId };
+        const body = { addressId: selectedAddressId };
         const token = Cookies.get("auth-token");
-
-        if (!token) {
-            navigate("login");
-
-            return;
-        }
 
         fetch(orderUrl,
             {
@@ -152,66 +92,264 @@ export default function OrderSummary(props) {
             } else {
                 const errorObj = await res.json();
 
-                setErrorMessage("Wystąpił błąd przy składaniu zamówienia: " + errorObj.message)
+                enqueueSnackbar("Wystąpił błąd przy składaniu zamówienia: " + errorObj.message, {
+                    variant: "error",
+                    autoHideDuration: 6000
+                });
             }
         }
         ).catch(error => {
-            setErrorMessage("Wystąpił błąd przy składaniu zamówienia: " + error.message)
+            enqueueSnackbar("Wystąpił błąd przy składaniu zamówienia: " + error.message, {
+                variant: "error",
+                autoHideDuration: 6000
+            });
         });
+    };
+
+    useEffect(() => {
+        const token = Cookies.get("auth-token");
+
+        const fetchAddresses = async function () {
+            const addressesUrl = buildSecureUrl("/profiles/addresses");
+
+            try {
+                const fetchedAddresses = await fetch(addressesUrl,
+                    {
+                        method: "GET",
+                        headers:
+                        {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }
+                ).then(res => res.json());
+
+                setAddresses(fetchedAddresses);
+                setSelectedAddressId(fetchedAddresses[0].id);
+            } catch (error) {
+                enqueueSnackbar(`Nie udało się załadować adresów. Błąd: ${error.message}`, {
+                    variant: "error",
+                    autoHideDuration: 6000
+                });
+            }
+        }
+
+        const fetchDeliveryMethod = async function () {
+            const deliveryMethodUrl = buildPublicUrl(`/delivery/${deliveryMethodIdRef.current}`);
+
+            try {
+                const fetchedDeliveryMethod = await fetch(deliveryMethodUrl,
+                    {
+                        method: "GET",
+                        headers:
+                        {
+                            "Content-Type": "application/json"
+                        }
+                    }
+                ).then(res => res.json());
+
+                setDeliveryMethod(fetchedDeliveryMethod);
+            } catch (error) {
+                enqueueSnackbar(`Nie udało się załadować informacji o dostawie. Błąd: ${error.message}`, {
+                    variant: "error",
+                    autoHideDuration: 6000
+                });
+            }
+        }
+
+        const fetchCartContent = async function () {
+            const cartUrl = buildSecureUrl("/carts/user");
+
+            try {
+                const fetchedCart = await fetch(cartUrl,
+                    {
+                        method: "GET",
+                        headers:
+                        {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }
+                ).then(res => res.json());
+
+                const productPromises = fetchedCart.cartEntries.map(async entry => {
+                    const productUrl = buildPublicUrl(`/products/${entry.productId}`);
+
+                    const res = await fetch(productUrl,
+                        {
+                            method: "GET",
+                            headers:
+                            {
+                                "Content-Type": "application/json"
+                            }
+                        }
+                    );
+
+                    return res.json();
+                });
+
+                const products = await Promise.all(productPromises);
+
+                const cartEntriesPopulated = fetchedCart.cartEntries.map((entry, index) => ({
+                    ...entry,
+                    productName: products[index].name,
+                    price: products[index].price,
+                    totalPrice: products[index].price * entry.quantity,
+                    imageIds: products[index].imageIds
+                }));
+
+                setCartEntries(cartEntriesPopulated);
+            } catch (error) {
+                enqueueSnackbar(`Nie udało się załadować zawartości koszyka. Błąd: ${error.message}`, {
+                    variant: "error",
+                    autoHideDuration: 6000
+                });
+            }
+        }
+
+        if (!token) {
+            navigate("/login");
+
+            return;
+        } else {
+            fetchAddresses();
+            fetchDeliveryMethod();
+            fetchCartContent();
+        }
+    }, [navigate, enqueueSnackbar]);
+
+    if (sumOfLoaded < 3 || selectedAddressId === -1) {
+        return (
+            <Container sx={{
+                display: "flex",
+                justifyContent: "center"
+            }}>
+                <CircularProgress />
+            </Container >
+        );
     }
 
-    let totalAmount = cartEntries.reduce((sum, entry) => sum + (entry.quantity * entry.price), 0);
-    totalAmount += Number(selectedDeliveryMethodPrice);
-    totalAmount = totalAmount.toFixed(2).replace(".", ",");
-
     return (
-        <div className="order-summary-container">
-            <h1>Podsumowanie zamówienia</h1>
+        <Container>
+            <Box sx={{
+                display: "flex",
+                flexDirection: "row"
+            }}>
+                <StoreIcon color="primary" fontSize="large" sx={{ mt: "3px", mr: 1 }} />
+                <Typography variant="h4" gutterBottom>Podsumowanie zamówienia</Typography>
+            </Box>
 
-            <div className="order-item-list">
-                {cartEntries.map(entry => <OrderSummaryCartEntry key={entry.id} entryData={entry} />)}
-            </div>
+            <Box sx={{
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" }
+            }}>
+                <TableContainer component={Paper} variant="outlined" sx={{ height: "fit-content" }}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Produkt</TableCell>
+                                <TableCell align="center">Ilość</TableCell>
+                                <TableCell align="center">Cena&nbsp;za&nbsp;szt.</TableCell>
+                                <TableCell align="center">Łącznie</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {cartEntries.map(entry => (
+                                <TableRow key={entry.id}>
+                                    <TableCell>{entry.productName}</TableCell>
+                                    <TableCell align="center">{entry.quantity}</TableCell>
+                                    <TableCell align="center">{getPriceAsText(entry.price)}&nbsp;zł</TableCell>
+                                    <TableCell align="center">{getPriceAsText(entry.totalPrice)}&nbsp;zł</TableCell>
+                                </TableRow>
+                            ))}
+                            <TableRow>
+                                <TableCell sx={{ display: "flex", flexDirection: "row", alignItems: "center", border: 0 }}>
+                                    <LocalShippingIcon color="action" sx={{ mr: 1 }} />
+                                    {deliveryMethod.name}
+                                </TableCell>
+                                <TableCell align="center" sx={{ border: 0 }}>1</TableCell>
+                                <TableCell align="center" sx={{ border: 0 }}>{getPriceAsText(deliveryMethod.price)}&nbsp;zł</TableCell>
+                                <TableCell align="center" sx={{ border: 0 }}>{getPriceAsText(deliveryMethod.price)}&nbsp;zł</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </TableContainer>
 
-            <div className="address-info">
-                <h2>Wybrany adres dostawy</h2>
+                <Box sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    ml: { xs: 0, md: 2 },
+                    mt: { xs: 2, md: 0 },
+                    gap: 1,
+                    alignItems: { xs: "center", md: "auto" },
+                }}>
+                    <Paper variant="outlined" sx={{
+                        whiteSpace: "nowrap",
+                        width: { xs: "60%", md: "auto" }
+                    }}>
+                        <Typography variant="h6" sx={{
+                            px: 2,
+                            py: 1,
+                            fontWeight: "bold",
+                            textAlign: "center"
+                        }}>
+                            Adres do wysyłki
+                        </Typography>
 
-                <div className="address-single">
-                    {addressData &&
-                        <>
-                            <span>{addressData.street} {addressData.houseNumber}{addressData.apartmentNumber ? `/${addressData.apartmentNumber}` : ""}</span>
-                            <span>{addressData.city}, {addressData.postalCode}</span>
-                            <span>{addressData.voivodeship}, {addressData.country}</span>
-                        </>
-                    }
-                </div>
-            </div>
+                        <Divider />
 
-            <div className="order-delivery-method">
-                <h2>Szczegóły dostawy</h2>
+                        <Box sx={{ p: 2, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                            <Box>
+                                <Typography>
+                                    {selectedAddress.street}&nbsp;{selectedAddress.houseNumber}{selectedAddress.apartmentNumber ? `\u00A0/\u00A0${selectedAddress.apartmentNumber}` : null}
+                                </Typography>
+                                <Typography>{selectedAddress.postalCode}&nbsp;{selectedAddress.city}</Typography>
+                                <Typography>{selectedAddress.voivodeship}</Typography>
+                                <Typography>{selectedAddress.country}</Typography>
+                            </Box>
 
-                <div className="order-delivery-method-info">
-                    {errorMessage &&
-                        <p>{errorMessage}</p>
-                    }
+                            <Tooltip title="Wybierz inny adres" arrow>
+                                <IconButton onClick={handleEditAddress}>
+                                    <ManageSearchIcon fontSize="large" color="primary" />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+                    </Paper>
 
-                    <form>
-                        {deliveryMethods.map(dm =>
-                            <div key={dm.id}>
-                                <input type="radio" name="delivery-method" id={dm.id} onChange={() => { setSelectedDeliveryMethodId(dm.id); setSelectedDeliveryMethodPrice(dm.price) }} />
-                                <label htmlFor={dm.id}>{dm.name} {dm.price} zł</label>
-                            </div>
-                        )}
-                    </form>
-                </div>
-            </div>
+                    <Paper variant="outlined" sx={{
+                        alignSelf: { xs: "auto", md: "stretch" },
+                        width: { xs: "60%", md: "auto" }
+                    }}>
+                        <Box sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            p: 1,
+                            gap: 1
+                        }}>
+                            <Typography variant="h6">Suma</Typography>
+                            <ReceiptLongIcon fontSize="large" color="primary" />
+                        </Box>
 
-            <div className="order-info">
-                <p>Razem: {totalAmount} zł</p>
+                        <Divider />
 
-                <button disabled={selectedDeliveryMethodId === null || errorMessage} onClick={handleOrder}>
-                    Zamawiam z obowiązkiem zapłaty
-                </button>
-            </div>
-        </div>
+                        <Box sx={{ p: 2 }}>
+                            <PriceRow label="Wartość koszyka" price={cartSum} />
+                            <PriceRow label="Dostawa" price={deliveryMethod.price} />
+                            <PriceRow label="Razem" price={cartSum + Number(deliveryMethod.price)} />
+                        </Box>
+                    </Paper>
+
+                    <Button variant="outlined" onClick={handleConfirmOrder} sx={{
+                        mb: { xs: 2, md: 0 }
+                    }}>
+                        Zamawiam z obowiązkiem zapłaty
+                    </Button>
+                </Box>
+
+                <AddressDialog addresses={addresses} addressIdSetter={setSelectedAddressId} isOpen={dialogOpen} dialogOpenSetter={setDialogOpen} />
+            </Box>
+        </Container>
     );
 }
+
+export default memo(OrderSummary);

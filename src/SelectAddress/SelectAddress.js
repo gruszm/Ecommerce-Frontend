@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import "./SelectAddress.css";
 import Cookies from "js-cookie";
 import { buildSecureUrl } from "../utils/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function SelectAddress(props) {
     const navigate = useNavigate();
+    const location = useLocation();
     const [addressList, setAddressList] = useState([]);
     const [errorMsg, setErrorMsg] = useState("");
     const [loading, setLoading] = useState(true);
@@ -36,7 +37,13 @@ export default function SelectAddress(props) {
     }, []);
 
     const navigateToSummary = (addressId) => {
-        navigate("/order-summary", { state: { addressId } });
+        navigate("/order-summary", {
+            state:
+            {
+                addressId,
+                deliveryMethodId: location?.state?.deliveryMethodId
+            }
+        });
     };
 
     if (loading) {
