@@ -25,7 +25,7 @@ import SelectAddress from './SelectAddress/SelectAddress';
 import OrderSummary from './OrderSummary/OrderSummary';
 import DeliveryMethodManagementPanel from './AdminPanel/DeliveryMethodManagementPanel/DeliveryMethodManagementPanel';
 import NewDeliveryMethodethodForm from './AdminPanel/DeliveryMethodManagementPanel/NewDeliveryMethodForm/NewDeliveryMethodForm';
-import OrderSuccess from './OrderSummary/OrderSuccess/OrderSuccess';
+import OrderSuccess from './OrderSummary/OrderSuccess/OrderSuccess.tsx';
 import { SnackbarProvider } from 'notistack';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
