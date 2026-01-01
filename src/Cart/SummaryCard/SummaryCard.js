@@ -55,13 +55,17 @@ function SummaryCard({ deliveryMethod, totalAmount }) {
                 <Typography color="text.secondary">
                     Dostawa: {deliveryMethod ? `${getPriceAsText(deliveryMethod.price)} zł` : "Nie wybrano"}
                 </Typography>
-                {deliveryMethod && <Typography color="text.secondary">Kwota łączna: {getPriceAsText(totalAmount)} zł</Typography>}
+                {deliveryMethod &&
+                    <Typography color="text.secondary">
+                        Kwota łączna: {getPriceAsText(totalAmount + Number(deliveryMethod.price))} zł
+                    </Typography>
+                }
             </CardContent>
             <CardActions sx={{
                 p: 2,
                 justifyContent: "flex-end"
             }}>
-                <Tooltip title="Podsumuj zamówienie">
+                <Tooltip title="Podsumuj zamówienie" arrow>
                     <Button
                         variant="contained"
                         disabled={deliveryMethod === null}

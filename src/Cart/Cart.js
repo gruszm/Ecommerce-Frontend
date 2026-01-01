@@ -20,10 +20,9 @@ export default function Cart() {
         let totalAmount = 0;
 
         totalAmount = productsInCart ? productsInCart.reduce((prev, curr) => prev + (curr.price * curr.quantity), 0) : 0;
-        totalAmount += deliveryMethod ? parseFloat(deliveryMethod.price) : 0;
 
         return totalAmount;
-    }, [productsInCart, deliveryMethod]);
+    }, [productsInCart]);
 
     const handleRadioChange = (selectedDeliveryMethod) => () => {
         setDeliveryMethod(selectedDeliveryMethod);
