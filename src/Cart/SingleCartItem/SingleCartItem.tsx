@@ -7,8 +7,15 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CardMedia from "@mui/material/CardMedia";
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
+import type { PopulatedCartEntry } from "../types/PopulatedCartEntry.tsx";
+import { SxProps, Theme } from "@mui/material";
 
-function SingleCartItem({ cartEntry, sx: propsSx }) {
+type SingleCartItemProps = {
+    cartEntry: PopulatedCartEntry,
+    sx: SxProps<Theme>
+}
+
+function SingleCartItem({ cartEntry, sx: propsSx }: SingleCartItemProps) {
     return (
         <Card variant="outlined" sx={{
             ...propsSx,

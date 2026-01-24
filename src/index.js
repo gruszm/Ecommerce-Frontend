@@ -10,7 +10,7 @@ import ProductList from './ProductList/ProductList';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NavigationBar from './NavigationBar/NavigationBar';
 import Login from './Login/Login';
-import Cart from './Cart/Cart';
+import Cart from './Cart/Cart.tsx';
 import ProtectedRoute from './ProtectedRoute/ProtectedRoute';
 import { AuthProvider } from './AuthContext/AuthContext';
 import Logout from './Logout/Logout';

@@ -7,17 +7,25 @@ import CardActions from "@mui/material/CardActions";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded';
-import { useNavigate } from "react-router-dom";
 import SummarizeOutlinedIcon from '@mui/icons-material/SummarizeOutlined';
+import { useNavigate } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
+import type { DeliveryMethod } from "../types/DeliveryMethod";
 
-function SummaryCard({ deliveryMethod, totalAmount }) {
+type SummaryCardPropsType = {
+    deliveryMethod: DeliveryMethod | null,
+    totalAmount: number
+}
+
+function SummaryCard({ deliveryMethod, totalAmount }: SummaryCardPropsType) {
     const navigate = useNavigate();
 
     const handleSummaryClick = () => {
+        if (!deliveryMethod) return;
+
         navigate("/order-summary", {
             state: {
-                deliveryMethodId: deliveryMethod.id
+                deliveryMethodId: deliveryMethod?.id
             }
         });
     };

@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, SyntheticEvent, useEffect, useState } from "react";
 import Card from "@mui/material/Card";
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import FormControl from "@mui/material/FormControl";
@@ -11,17 +11,24 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import { buildPublicUrl } from "../../utils/api";
 import { useSnackbar } from "notistack";
+import { SxProps, Theme } from "@mui/material";
+import { type DeliveryMethod, isDeliveryMethodArray } from "../types/DeliveryMethod.tsx";
 
-function DeliveryMethodCard({ sx: propsSx, onRadioChange: handleRadioChange }) {
+type DeliveryMethodCardProps = {
+    sx: SxProps<Theme>,
+    onRadioChange: (deliveryMethod: DeliveryMethod) => (event?: SyntheticEvent<Element, Event>) => void
+}
+
+function DeliveryMethodCard({ sx: propsSx, onRadioChange: handleRadioChange }: DeliveryMethodCardProps) {
     const { enqueueSnackbar } = useSnackbar();
-    const [deliveryMethods, setDeliveryMethods] = useState(null);
+    const [deliveryMethods, setDeliveryMethods] = useState<DeliveryMethod[] | null>(null);
 
     useEffect(() => {
         const fetchDeliveryMethods = async function () {
             const url = buildPublicUrl("/delivery/");
 
             try {
-                const res = await fetch(url,
+                const res: unknown = await fetch(url,
                     {
                         method: "GET",
                         headers: {
@@ -30,10 +37,16 @@ function DeliveryMethodCard({ sx: propsSx, onRadioChange: handleRadioChange }) {
                     }
                 ).then(res => res.json());
 
-                setDeliveryMethods(res);
+                if (isDeliveryMethodArray(res)) {
+                    setDeliveryMethods(res);
+                }
+                else {
+                    enqueueSnackbar("Niewłaściwy typ danych", { variant: "error", autoHideDuration: 6000 });
+                }
             }
-            catch (error) {
-                enqueueSnackbar(`Coś poszło nie tak podczas ładowania metod dostawy. ${error.message}`, { variant: "error", autoHideDuration: 6000 });
+            catch (error: unknown) {
+                if (error instanceof Error)
+                    enqueueSnackbar(`Coś poszło nie tak podczas ładowania metod dostawy. ${error.message}`, { variant: "error", autoHideDuration: 6000 });
             }
         };
 
