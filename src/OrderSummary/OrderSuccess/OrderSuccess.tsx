@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { buildGatewayUrl, buildPublicUrl, getPriceAsText } from "../../utils/api.js";
 
+// TODO: Remove duplicate type
 type Product = {
     productId: number,
     name: string,

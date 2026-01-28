@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { memo } from "react";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
@@ -12,12 +12,21 @@ import Tooltip from "@mui/material/Tooltip";
 import { green } from "@mui/material/colors";
 import CloseIcon from "@mui/icons-material/Close";
 import DialogContent from "@mui/material/DialogContent";
+import type { Address } from "../../SelectAddress/types/Address";
 
-function AddressDialog({ isOpen, dialogOpenSetter, addresses, addressIdSetter }) {
-    const handleSelectAddress = (id) => (event) => {
-        addressIdSetter(id);
-        dialogOpenSetter(false);
-    }
+type AddressDialogProps = {
+    isOpen: boolean,
+    dialogOpenSetter: (open: boolean) => void,
+    addresses: Address[],
+    addressIdSetter: (id: number) => void
+}
+
+function AddressDialog({ isOpen, dialogOpenSetter, addresses, addressIdSetter }: AddressDialogProps) {
+    const handleSelectAddress = (id: number) =>
+        (event: React.MouseEvent<HTMLButtonElement>) => {
+            addressIdSetter(id);
+            dialogOpenSetter(false);
+        }
 
     const handleClose = () => {
         dialogOpenSetter(false);

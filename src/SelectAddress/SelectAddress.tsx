@@ -3,13 +3,14 @@ import "./SelectAddress.css";
 import Cookies from "js-cookie";
 import { buildSecureUrl } from "../utils/api";
 import { useNavigate, useLocation } from "react-router-dom";
+import { isAddress, type Address } from "./types/Address.tsx";
 
-export default function SelectAddress(props) {
+export default function SelectAddress() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [addressList, setAddressList] = useState([]);
-    const [errorMsg, setErrorMsg] = useState("");
-    const [loading, setLoading] = useState(true);
+    const [addressList, setAddressList] = useState<Address[]>([]);
+    const [errorMsg, setErrorMsg] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const retrieveAddressListUrl = buildSecureUrl("/profiles/addresses");
@@ -24,23 +25,29 @@ export default function SelectAddress(props) {
                 }
             }
         ).then(res => res.json()
-        ).then(parsedAddressList => {
-            setAddressList(parsedAddressList);
+        ).then((parsedAddressList: unknown) => {
+            // TODO: add handling - throw error
+            if (!Array.isArray(parsedAddressList) || !parsedAddressList.every(isAddress)) {
+                return;
+            }
 
+            setAddressList(parsedAddressList);
             setLoading(false);
         }
-        ).catch(error => {
-            setErrorMsg(error.message);
-
+        ).catch((error: unknown) => {
             setLoading(false);
+
+            if (error instanceof Error) {
+                setErrorMsg(error.message);
+            }
         });
     }, []);
 
-    const navigateToSummary = (addressId) => {
+    const navigateToSummary = (address: Address) => () => {
         navigate("/order-summary", {
             state:
             {
-                addressId,
+                addressId: address.id,
                 deliveryMethodId: location?.state?.deliveryMethodId
             }
         });
@@ -69,7 +76,7 @@ export default function SelectAddress(props) {
                             <span>{a.street} {a.houseNumber}{a.apartmentNumber ? `/${a.apartmentNumber}` : ""}</span>
                             <span>{a.city}, {a.postalCode}</span>
                             <span>{a.voivodeship}, {a.country}</span>
-                            <button onClick={() => navigateToSummary(a.id)}>Wybierz</button>
+                            <button onClick={navigateToSummary(a)}>Wybierz</button>
                         </div>
                     )}
                 </div>

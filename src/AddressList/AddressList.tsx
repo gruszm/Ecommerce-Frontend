@@ -16,11 +16,17 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import Zoom from "@mui/material/Zoom";
+import { isAddress, type Address } from "../SelectAddress/types/Address.tsx";
 
-export default function AddressList(props) {
-    const [addresses, setAddresses] = useState([]);
-    const [errMsg, setErrMsg] = useState("");
-    const [popperData, setPopperData] = useState({ anchorEl: null, addressId: null });
+type PopperDataType = {
+    anchorEl: HTMLElement | null,
+    addressId: number | null
+}
+
+export default function AddressList() {
+    const [addresses, setAddresses] = useState<Address[]>([]);
+    const [, setErrMsg] = useState<string>("");
+    const [popperData, setPopperData] = useState<PopperDataType>({ anchorEl: null, addressId: null });
 
     useEffect(() => {
         const url = buildSecureUrl("/profiles/addresses");
@@ -34,23 +40,38 @@ export default function AddressList(props) {
             method: "GET"
         }).then(res => {
             if (res.ok) {
-                res.json().then(parsed => setAddresses(parsed));
+                res.json().then((parsed: unknown) => {
+                    // TODO: add handling - throw error
+                    if (!Array.isArray(parsed) || !parsed.every(isAddress)) {
+                        return;
+                    }
 
+                    setAddresses(parsed)
+                });
             } else if (res.status === 404) {
                 setErrMsg("Nie masz jeszcze żadnych adresów.");
             } else {
-                res.json().then(parsed => setErrMsg(parsed.message));
+                res.json().then((parsed: unknown) => {
+                    if (parsed === null || typeof parsed !== "object" || typeof (parsed as Record<string, unknown>).message !== "string") {
+                        return;
+                    }
+
+                    setErrMsg((parsed as { message: string }).message);
+                })
             }
-        }).catch(err => {
-            setErrMsg(err.message);
+        }).catch((err: unknown) => {
+            if (err instanceof Error) {
+                setErrMsg(err.message);
+            }
         });
     }, []);
 
-    const handleDeleteButton = (event, addressId) => {
-        setPopperData(prev => prev.anchorEl === event.currentTarget
-            ? { anchorEl: null, addressId: null }
-            : { anchorEl: event.currentTarget, addressId });
-    };
+    const handleDeleteButton = (addressId: number) =>
+        (event: React.MouseEvent<HTMLButtonElement>) => {
+            setPopperData(prev => prev.anchorEl === event.currentTarget
+                ? { anchorEl: null, addressId: null }
+                : { anchorEl: event.currentTarget, addressId });
+        };
 
     const closePopper = () => {
         setPopperData({ anchorEl: null, addressId: null });
@@ -61,7 +82,7 @@ export default function AddressList(props) {
 
         closePopper();
 
-        // Let the popper close, as the default leavingScreen is 195ms transition duration, then actually update the list
+        // Let the popper close, as the default leavingScreen transition duration is 195ms, then actually update the list
         setTimeout(() => {
             setAddresses(newAddresses);
         }, 195);
@@ -121,7 +142,7 @@ export default function AddressList(props) {
                                 position: "relative"
                             }}>
                             <Box>
-                                <IconButton onClick={(e) => handleDeleteButton(e, addr.id)} sx={{
+                                <IconButton onClick={handleDeleteButton(addr.id)} sx={{
                                     position: "absolute",
                                     top: { xs: 7, sm: 10 },
                                     right: { xs: 6, sm: 9 }

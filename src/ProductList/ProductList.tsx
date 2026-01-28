@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./ProductList.css";
-import { buildPublicUrl, buildSecureUrl } from "../utils/api";
+import { buildPublicUrl, buildSecureUrl, getPriceAsText } from "../utils/api";
 import Container from "@mui/material/Container";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -14,75 +14,93 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import { isProduct, type Product } from "../Cart/types/Product.tsx";
 
 export default function ProductList() {
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [productList, setProductList] = useState([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [productList, setProductList] = useState<Product[]>([]);
     const { enqueueSnackbar } = useSnackbar();
 
     const navigate = useNavigate();
 
-    function addToCart(event, id, name) {
-        event.preventDefault();
+    const addToCart = (product: Product) =>
+        (event: React.MouseEvent<HTMLButtonElement>) => {
+            event.preventDefault();
 
-        const token = Cookies.get("auth-token");
+            const token = Cookies.get("auth-token");
 
-        if (!token) {
-            navigate("/login");
+            if (!token) {
+                navigate("/login");
 
-            return;
-        }
-
-        const url = buildSecureUrl(`/carts/${id}/1`);
-
-        fetch(url, {
-            method: "POST",
-            headers: {
-                authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            },
-        }).then(async res => {
-            if (res.ok) {
-                const splittedName = name.split(" ");
-                let shortName;
-
-                if (splittedName.length > 2) {
-                    shortName = splittedName[0] + " " + splittedName[1] + "...";
-                }
-                else {
-                    shortName = name;
-                }
-
-                enqueueSnackbar(`Dodano do koszyka "${shortName}"`, { variant: "success", autoHideDuration: 3000 });
-            } else {
-                const errorResponse = await res.json();
-
-                console.log(`Error on adding to cart: ${errorResponse}`);
-                enqueueSnackbar("Nie udało się dodać do koszyka.", { variant: "error", autoHideDuration: 3000 });
+                return;
             }
-        });
-    }
+
+            const url = buildSecureUrl(`/carts/${product.id}/1`);
+
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+            }).then(async res => {
+                if (res.ok) {
+                    const splittedName = product.name.split(" ");
+                    let shortName;
+
+                    if (splittedName.length > 2) {
+                        shortName = splittedName[0] + " " + splittedName[1] + "...";
+                    }
+                    else {
+                        shortName = product.name;
+                    }
+
+                    enqueueSnackbar(`Dodano do koszyka "${shortName}"`, { variant: "success", autoHideDuration: 3000 });
+                } else {
+                    const errorResponse: unknown = await res.json();
+
+                    if (typeof errorResponse === "string") {
+                        console.log(`Error on adding to cart: ${errorResponse}`);
+                        enqueueSnackbar("Nie udało się dodać do koszyka.", { variant: "error", autoHideDuration: 3000 });
+                    }
+                }
+            }).catch((error: unknown) => {
+                if (error instanceof Error) {
+                    console.log(`Error on adding to cart: ${error.message}`);
+                    enqueueSnackbar("Nie udało się dodać do koszyka.", { variant: "error", autoHideDuration: 3000 });
+                }
+            });
+        }
 
     useEffect(() => {
         const url = buildPublicUrl("/products");
 
         fetch(url)
             .then(res => res.json())
-            .then(res => {
+            .then((res: unknown) => {
                 setLoading(false);
+
+                if (!Array.isArray(res) || !res.every(isProduct)) {
+                    enqueueSnackbar("Niewłaściwy typ danych", { variant: "error", autoHideDuration: 6000 });
+
+                    return;
+                }
 
                 if (res && res.length > 0) {
                     setProductList(res.filter((product => product.amount > 0))); // Only display the available products
                 }
             })
-            .catch(error => {
+            .catch((error: unknown) => {
                 setLoading(false);
                 setError(true);
-                setErrorMessage(error.message);
+
+                if (error instanceof Error) {
+                    setErrorMessage(error.message);
+                }
             });
-    }, []);
+    }, [enqueueSnackbar]);
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {errorMessage}</p>;
@@ -105,10 +123,10 @@ export default function ProductList() {
                                 <Box sx={{ textAlign: { xs: "center", sm: "start" } }}>
                                     <Typography variant="h5" fontWeight="500" gutterBottom>{p.name}</Typography>
                                     <Typography color="text.secondary">Ilość: {p.amount}</Typography>
-                                    <Typography color="text.secondary">{p.price.replace(".", ",")} zł za sztukę</Typography>
+                                    <Typography color="text.secondary">{getPriceAsText(p.price)} zł za sztukę</Typography>
                                 </Box>
 
-                                <Button sx={{ display: { xs: "none", sm: "inline-flex" }, marginTop: "auto" }} startIcon={<ShoppingCartIcon />} onClick={(e) => addToCart(e, p.id, p.name)}>Dodaj do koszyka</Button>
+                                <Button sx={{ display: { xs: "none", sm: "inline-flex" }, marginTop: "auto" }} startIcon={<ShoppingCartIcon />} onClick={addToCart(p)}>Dodaj do koszyka</Button>
                             </CardContent>
                             <CardMedia
                                 component="img"
@@ -121,11 +139,11 @@ export default function ProductList() {
                                         transform: "scale(1.05)"
                                     }
                                 }}
-                                image={(p.imageIds.length > 0) && buildPublicUrl("/products/images/" + p.imageIds[0])}
+                                image={(p.imageIds.length > 0) ? buildPublicUrl("/products/images/" + p.imageIds[0]) : ""}
                                 alt={p.name}
                             />
                             <CardActions sx={{ display: { xs: "inline-flex", sm: "none" } }}>
-                                <Button startIcon={<ShoppingCartIcon />} onClick={(e) => addToCart(e, p.id, p.name)}>Dodaj do koszyka</Button>
+                                <Button startIcon={<ShoppingCartIcon />} onClick={addToCart(p)}>Dodaj do koszyka</Button>
                             </CardActions>
                         </Box>
                     </Card>
