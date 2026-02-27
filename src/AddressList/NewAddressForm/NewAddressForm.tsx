@@ -1,6 +1,6 @@
 import "./NewAddressForm.css";
 import { buildSecureUrl } from "../../utils/api";
-import { useState, useEffect, MouseEvent, ChangeEvent } from "react";
+import { MouseEvent, ChangeEvent, useReducer } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
@@ -9,40 +9,75 @@ const postalCodeRegex = /^\d{2}-?(?!000)\d{3}$/;
 const textRegex = /^[\p{L}\s-]*$/u;
 const numberRegex = /^[1-9][0-9]*$|^$/;
 
+// Form state utils
+type FormState = {
+    street: string,
+    houseNumber: string,
+    apartmentNumber: string,
+    postalCode: string,
+    city: string,
+    voivodeship: string,
+    country: string,
+    errorMessage: string
+};
+
+type FormAction =
+    | { type: "SET_FIELD", field: keyof Omit<FormState, "errorMessage">, value: string }
+    | { type: "SET_ERROR", message: string }
+    | { type: "RESET" };
+
+const formInitialState: FormState = {
+    street: "",
+    houseNumber: "",
+    apartmentNumber: "",
+    postalCode: "",
+    city: "",
+    voivodeship: "",
+    country: "",
+    errorMessage: ""
+};
+
+function formReducer(state: FormState, action: FormAction): FormState {
+    switch (action.type) {
+        case "SET_FIELD":
+            return {
+                ...state,
+                [action.field]: action.value
+            };
+        case "SET_ERROR":
+            return {
+                ...state,
+                errorMessage: action.message
+            };
+        case "RESET":
+            return formInitialState;
+        default:
+            const exhaustiveness: never = action;
+            return state;
+    }
+}
+
 export default function NewAddressForm() {
     // Hooks
     const navigate = useNavigate();
-    const [street, setStreet] = useState<string>("");
-    const [houseNumber, setHouseNumber] = useState<string>("");
-    const [apartmentNumber, setApartmentNumber] = useState<string>("");
-    const [postalCode, setPostalCode] = useState<string>("");
-    const [city, setCity] = useState<string>("");
-    const [voivodeship, setVoivodeship] = useState<string>("");
-    const [country, setCountry] = useState<string>("");
-    const [submitEnabled, setSubmitEnabled] = useState<boolean>(true);
-    const [errorMsg, setErrorMsg] = useState<string>("");
+    const [formState, dispatch] = useReducer(formReducer, formInitialState);
 
-    // Validate form 
-    useEffect(() => {
-        const isStreetValid = street.length > 0 && textRegex.test(street);
-        const isHouseNumberValid = houseNumber.length > 0 && numberRegex.test(houseNumber);
-        const isApartmentNumberValid = apartmentNumber.length === 0 || numberRegex.test(apartmentNumber);
-        const isPostalCodeValid = postalCodeRegex.test(postalCode);
-        const isCityValid = city.length > 0 && textRegex.test(city);
-        const isVoivodeshipValid = voivodeship.length > 0 && textRegex.test(voivodeship);
-        const isCountryValid = country.length > 0 && textRegex.test(country);
+    const isStreetValid = formState.street.length > 0 && textRegex.test(formState.street);
+    const isHouseNumberValid = formState.houseNumber.length > 0 && numberRegex.test(formState.houseNumber);
+    const isApartmentNumberValid = formState.apartmentNumber.length === 0 || numberRegex.test(formState.apartmentNumber);
+    const isPostalCodeValid = postalCodeRegex.test(formState.postalCode);
+    const isCityValid = formState.city.length > 0 && textRegex.test(formState.city);
+    const isVoivodeshipValid = formState.voivodeship.length > 0 && textRegex.test(formState.voivodeship);
+    const isCountryValid = formState.country.length > 0 && textRegex.test(formState.country);
 
-        const formValid =
-            isStreetValid &&
-            isHouseNumberValid &&
-            isApartmentNumberValid &&
-            isPostalCodeValid &&
-            isCityValid &&
-            isVoivodeshipValid &&
-            isCountryValid;
-
-        setSubmitEnabled(formValid);
-    }, [street, houseNumber, apartmentNumber, postalCode, city, voivodeship, country]);
+    const formValid =
+        isStreetValid &&
+        isHouseNumberValid &&
+        isApartmentNumberValid &&
+        isPostalCodeValid &&
+        isCityValid &&
+        isVoivodeshipValid &&
+        isCountryValid;
 
     // Handlers
     const handleSubmit = (event: MouseEvent<HTMLButtonElement>) => {
@@ -52,21 +87,21 @@ export default function NewAddressForm() {
         const token = Cookies.get("auth-token");
         let formattedPostalCode: string;
 
-        // Make sure to send the postal code in corrent form (with a dash on the 3rd position)
-        if (postalCode.indexOf("-") === -1) {
-            formattedPostalCode = postalCode.slice(0, 2) + "-" + postalCode.slice(2, 5);
+        // Make sure to send the postal code in correct form (with a dash on the 3rd position)
+        if (formState.postalCode.indexOf("-") === -1) {
+            formattedPostalCode = formState.postalCode.slice(0, 2) + "-" + formState.postalCode.slice(2, 5);
         } else {
-            formattedPostalCode = postalCode;
+            formattedPostalCode = formState.postalCode;
         }
 
         const address = {
-            street,
-            houseNumber,
-            apartmentNumber,
+            street: formState.street,
+            houseNumber: formState.houseNumber,
+            apartmentNumber: formState.apartmentNumber,
             postalCode: formattedPostalCode,
-            city,
-            voivodeship,
-            country
+            city: formState.city,
+            voivodeship: formState.voivodeship,
+            country: formState.country
         };
 
         fetch(url, {
@@ -82,21 +117,21 @@ export default function NewAddressForm() {
             } else {
                 res.json().then((parsed: unknown) => {
                     if (parsed !== null && typeof parsed === "object" && "message" in parsed && typeof parsed.message === "string") {
-                        setErrorMsg(parsed.message);
+                        dispatch({ type: "SET_ERROR", message: parsed.message })
                     }
                 });
             }
         }).catch((err: unknown) => {
             if (err instanceof Error)
-                setErrorMsg(err.message);
+                dispatch({ type: "SET_ERROR", message: err.message });
         });
     }
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string>>, regex: RegExp) => {
+    const handleChange = (field: keyof Omit<FormState, "errorMessage">, regex: RegExp) => (event: ChangeEvent<HTMLInputElement>) => {
         const newValue = event.target.value;
 
         if (regex.test(newValue)) {
-            setter(newValue);
+            dispatch({ type: "SET_FIELD", "field": field, "value": newValue });
         }
     };
 
@@ -116,7 +151,7 @@ export default function NewAddressForm() {
 
         // Check, if the postal code is filled
         if (numberOfDigits <= 5) {
-            setPostalCode(newValue);
+            dispatch({ type: "SET_FIELD", field: "postalCode", value: newValue });
         }
     };
 
@@ -129,44 +164,44 @@ export default function NewAddressForm() {
 
                     <div className="new-address-form-row">
                         <label htmlFor="address-street">Ulica:</label>
-                        <input id="address-street" type="text" value={street} onChange={(event) => handleChange(event, setStreet, textRegex)} />
+                        <input id="address-street" type="text" value={formState.street} onChange={handleChange("street", textRegex)} />
                     </div>
 
                     <div className="new-address-form-row">
                         <label htmlFor="address-house-number">Numer budynku:</label>
-                        <input id="address-house-number" type="text" value={houseNumber} onChange={(event) => handleChange(event, setHouseNumber, numberRegex)} />
+                        <input id="address-house-number" type="text" value={formState.houseNumber} onChange={handleChange("houseNumber", numberRegex)} />
                     </div>
 
                     <div className="new-address-form-row">
                         <label htmlFor="address-apartment-number">Numer mieszkania:</label>
-                        <input id="address-apartment-number" type="text" value={apartmentNumber} autoComplete="address-line2"
-                            onChange={(event) => handleChange(event, setApartmentNumber, numberRegex)} />
+                        <input id="address-apartment-number" type="text" value={formState.apartmentNumber} autoComplete="address-line2"
+                            onChange={handleChange("apartmentNumber", numberRegex)} />
                     </div>
 
                     <div className="new-address-form-row">
                         <label htmlFor="address-postal-code">Kod pocztowy:</label>
-                        <input id="address-postal-code" type="text" placeholder="00-000" value={postalCode} autoComplete="postal-code" onChange={handlePostalCodeChange} />
+                        <input id="address-postal-code" type="text" placeholder="00-000" value={formState.postalCode} autoComplete="postal-code" onChange={handlePostalCodeChange} />
                     </div>
 
                     <div className="new-address-form-row">
                         <label htmlFor="address-city">Miasto:</label>
-                        <input id="address-city" type="text" value={city} autoComplete="address-level2" onChange={(event) => handleChange(event, setCity, textRegex)} />
+                        <input id="address-city" type="text" value={formState.city} autoComplete="address-level2" onChange={handleChange("city", textRegex)} />
                     </div>
 
                     <div className="new-address-form-row">
                         <label htmlFor="address-voivodeship">Województwo:</label>
-                        <input id="address-voivodeship" type="text" value={voivodeship} autoComplete="address-level1" onChange={(event) => handleChange(event, setVoivodeship, textRegex)} />
+                        <input id="address-voivodeship" type="text" value={formState.voivodeship} autoComplete="address-level1" onChange={handleChange("voivodeship", textRegex)} />
                     </div>
 
                     <div className="new-address-form-row">
                         <label htmlFor="address-country">Kraj:</label>
-                        <input id="address-country" type="text" value={country} autoComplete="country-name" onChange={(event) => handleChange(event, setCountry, textRegex)} />
+                        <input id="address-country" type="text" value={formState.country} autoComplete="country-name" onChange={handleChange("country", textRegex)} />
                     </div>
 
-                    <button type="submit" disabled={!submitEnabled} onClick={handleSubmit} style={{ marginTop: "12px" }}>Zatwierdź</button>
+                    <button type="submit" disabled={!formValid} onClick={handleSubmit} style={{ marginTop: "12px" }}>Zatwierdź</button>
                 </form>
 
-                <span>{errorMsg}</span>
+                <span>{formState.errorMessage}</span>
             </div>
         </div>
     );

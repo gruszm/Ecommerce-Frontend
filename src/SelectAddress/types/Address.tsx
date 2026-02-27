@@ -20,7 +20,7 @@ export function isAddress(value: unknown): value is Address {
         typeof v.id === "number" &&
         typeof v.street === "string" &&
         typeof v.houseNumber === "number" &&
-        (typeof v.apartmentNumber === "number" || typeof v.apartmentNumber === "undefined") &&
+        (typeof v.apartmentNumber === "number" || v.apartmentNumber === null) &&
         typeof v.city === "string" &&
         typeof v.postalCode === "string" &&
         typeof v.voivodeship === "string" &&

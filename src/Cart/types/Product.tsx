@@ -1,7 +1,7 @@
 export type Product = {
     id: number,
     name: string,
-    price: number,
+    price: number | string,
     amount: number,
     imageIds: number[]
 }
@@ -16,7 +16,7 @@ export function isProduct(value: unknown): value is Product {
     return (
         typeof v.id === "number" &&
         typeof v.name === "string" &&
-        typeof v.price === "number" &&
+        (typeof v.price === "number" || typeof v.price === "string") &&
         typeof v.amount === "number" &&
         Array.isArray(v.imageIds) &&
         v.imageIds.every(i => typeof i === "number")

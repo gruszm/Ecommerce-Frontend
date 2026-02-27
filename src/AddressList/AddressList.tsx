@@ -161,7 +161,6 @@ export default function AddressList() {
                                 </CardContent>
                             </Box>
                         </Card>
-
                     </Grid>
                 ))}
             </Grid>

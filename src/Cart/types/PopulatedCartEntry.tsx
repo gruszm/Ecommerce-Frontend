@@ -4,7 +4,7 @@ type _PopulatedCartEntry = {
     id: number,
     productName: string,
     quantity: number,
-    price: number,
+    price: number | string,
     imageIds: number[]
 } & RawCartEntry
 
@@ -27,7 +27,7 @@ export function isPopulatedCartEntry(value: unknown): value is PopulatedCartEntr
         typeof v.id === "number" &&
         typeof v.productName === "string" &&
         typeof v.quantity === "number" &&
-        typeof v.price === "number" &&
+        (typeof v.price === "number" || typeof v.price === "string") &&
         Array.isArray(v.imageIds) &&
         v.imageIds.every(i => typeof i === "number")
     );
