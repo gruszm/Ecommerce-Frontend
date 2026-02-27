@@ -4,9 +4,9 @@ import { Navigate, Outlet } from "react-router-dom";
 import { buildGatewayUrl } from "../utils/api";
 
 export default function AdminRoute() {
-    const [authChecked, setAuthChecked] = useState(false);
-    const [authorized, setAuthorized] = useState(false);
-    const [hasElevatedRights, setElevatedRights] = useState(false);
+    const [authChecked, setAuthChecked] = useState<boolean>(false);
+    const [authorized, setAuthorized] = useState<boolean>(false);
+    const [hasElevatedRights, setElevatedRights] = useState<boolean>(false);
 
     useEffect(() => {
         const token = Cookies.get("auth-token");
@@ -30,18 +30,24 @@ export default function AdminRoute() {
             })
             .then(async res => {
                 if (res.ok) {
-                    const parsedData = await res.json();
+                    const parsedData: unknown = await res.json();
 
                     setAuthChecked(true);
                     setAuthorized(true);
-                    setElevatedRights(parsedData.hasElevatedRights);
+
+                    if ((parsedData !== null) &&
+                        (typeof parsedData === "object") &&
+                        ("hasElevatedRights" in parsedData) &&
+                        (typeof parsedData.hasElevatedRights === "boolean")) {
+                        setElevatedRights(parsedData.hasElevatedRights);
+                    }
                 }
                 else {
                     setAuthChecked(true);
                     setAuthorized(false);
                 }
             })
-            .catch(error => {
+            .catch(() => {
                 setAuthChecked(true);
                 setAuthorized(false);
             });

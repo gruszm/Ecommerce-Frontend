@@ -1,17 +1,37 @@
 import "./Login.css";
-import { useContext, useState } from "react";
+import { useContext, useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { AuthContext } from "../AuthContext/AuthContext";
+import { AuthContext } from "../AuthContext/AuthContext.tsx";
 import { buildGatewayUrl } from "../utils/api";
 
-export default function Login(props) {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+type LoginDataType = {
+    token: string,
+    daysUntilExpires: number,
+    hasElevatedRights: boolean
+}
+
+function isLoginDataType(value: unknown): value is LoginDataType {
+    if (value === null || typeof value !== "object") {
+        return false;
+    }
+
+    const v = value as Record<string, unknown>;
+
+    return (
+        typeof v.token === "string" &&
+        typeof v.daysUntilExpires === "number" &&
+        typeof v.hasElevatedRights === "boolean"
+    );
+}
+
+export default function Login() {
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
     const navigate = useNavigate();
     const { setAuthenticated, setElevatedRights } = useContext(AuthContext);
 
-    const login = async function (event) {
+    const login = async function (event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         const url = buildGatewayUrl("/login");
@@ -28,7 +48,12 @@ export default function Login(props) {
         );
 
         if (response.ok) {
-            const parsedData = await response.json();
+            const parsedData: unknown = await response.json();
+
+            if (!isLoginDataType(parsedData)) {
+                return;
+            }
+
             const { token, daysUntilExpires, hasElevatedRights } = parsedData;
 
             Cookies.set("auth-token", token, { expires: daysUntilExpires });

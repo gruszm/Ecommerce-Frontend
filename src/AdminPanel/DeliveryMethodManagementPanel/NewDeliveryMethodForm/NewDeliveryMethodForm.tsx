@@ -2,16 +2,16 @@ import "./NewDeliveryMethodForm.css";
 import { buildSecureUrl } from "../../../utils/api";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { useState } from "react";
+import { useState, FormEvent, ChangeEvent } from "react";
 
 export default function NewDeliveryMethodethodForm() {
-    const [name, setName] = useState("");
-    const [price, setPrice] = useState("");
-    const [errorMessage, setErrorMessage] = useState("empty error message");
+    const [name, setName] = useState<string>("");
+    const [price, setPrice] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string>("empty error message");
 
     const navigate = useNavigate();
 
-    const handleSubmit = (event) => {
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         const url = buildSecureUrl("/delivery/");
@@ -29,15 +29,17 @@ export default function NewDeliveryMethodethodForm() {
             if (res.ok) {
                 navigate("/admin-panel/delivery-method-management-panel");
             } else {
-                const errorObject = await res.json();
-                setErrorMessage(JSON.stringify(errorObject.message));
+                const errorObject: unknown = await res.json();
+
+                if (errorObject && typeof errorObject === "object" && "message" in errorObject && typeof errorObject.message === "string")
+                    setErrorMessage(JSON.stringify(errorObject.message));
             }
-        }).catch(error => {
+        }).catch(() => {
             setErrorMessage("Dodawanie nowej metody dostawy nie powiodło się.");
         });
     };
 
-    const handleNameChange = (event) => {
+    const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
         const onlyLettersAndSpaces = /^[\p{L} ]*$/u; // Regex, which matches only Unicode letters and spaces, no digits or symbols
         const newName = event.target.value;          // New name
 
@@ -47,14 +49,14 @@ export default function NewDeliveryMethodethodForm() {
         }
     };
 
-    const handlePriceChange = (event) => {
+    const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
         let newValue = event.target.value.replace(",", ".");
 
         // Check, if a new character was added
         if (newValue.length > price.length) {
 
             // Check, if the new value is a number
-            if (!isNaN(parseFloat(newValue)) && isFinite(newValue)) {
+            if (!isNaN(parseFloat(newValue)) && isFinite(parseFloat(newValue))) {
 
                 // Divide the number to the part before and after comma
                 const priceParts = newValue.split(".");

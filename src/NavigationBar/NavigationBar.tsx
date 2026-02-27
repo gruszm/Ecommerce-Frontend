@@ -1,27 +1,29 @@
 import "./NavigationBar.css";
 import { Link, Outlet } from "react-router-dom";
 import { useContext, useEffect, useState, useRef } from "react";
-import { AuthContext } from "../AuthContext/AuthContext";
+import { AuthContext } from "../AuthContext/AuthContext.tsx";
 import Cookies from "js-cookie";
 import { buildGatewayUrl } from "../utils/api";
 
 export default function NavigationBar() {
     const { isAuthenticated, setAuthenticated, setElevatedRights, hasElevatedRights } = useContext(AuthContext);
-    const [dropdownMenuActive, setDropdownMenuActive] = useState(false);
+    const [dropdownMenuActive, setDropdownMenuActive] = useState<boolean>(false);
     const closeDropdownMenu = () => setDropdownMenuActive(false);
-    const dropdownMenuRef = useRef(null);
-
-    const handleClickOutsideDropdown = (event) => {
-        const target = event.target;
-
-        if (dropdownMenuRef.current && !dropdownMenuRef.current.contains(target)) {
-            setDropdownMenuActive(false);
-        }
-    };
+    const dropdownMenuRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         const token = Cookies.get("auth-token");
         const url = buildGatewayUrl("/validate");
+
+        const handleClickOutsideDropdown = function (event: MouseEvent) {
+            const target = event.target;
+
+            if (dropdownMenuRef.current &&
+                target instanceof Node &&
+                !dropdownMenuRef.current.contains(target)) {
+                closeDropdownMenu();
+            }
+        };
 
         fetch(url,
             {
@@ -33,12 +35,15 @@ export default function NavigationBar() {
             }
         )
             .then(res => res.json())
-            .then(res => {
+            .then((res: unknown) => {
                 setAuthenticated(true);
-                setElevatedRights(res.hasElevatedRights);
+
+                if (res !== null && typeof res === "object" && "hasElevatedRights" in res && typeof res.hasElevatedRights === "boolean")
+                    setElevatedRights(res.hasElevatedRights);
             })
-            .catch(error => {
-                console.log(error.message);
+            .catch((error: unknown) => {
+                if (error instanceof Error)
+                    console.log(error.message);
             });
 
         document.addEventListener("click", handleClickOutsideDropdown);

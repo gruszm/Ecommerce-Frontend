@@ -1,6 +1,6 @@
 import "./DeliveryMethodManagementPanel.css";
 import { Link } from "react-router-dom";
-import DeliveryMethodManagementPanelList from "./DeliveryMethodManagementPanelList/DeliveryMethodManagementPanelList";
+import DeliveryMethodManagementPanelList from "./DeliveryMethodManagementPanelList/DeliveryMethodManagementPanelList.tsx";
 
 export default function DeliveryMethodManagementPanel(props) {
     return (

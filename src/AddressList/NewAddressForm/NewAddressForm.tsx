@@ -1,6 +1,6 @@
 import "./NewAddressForm.css";
 import { buildSecureUrl } from "../../utils/api";
-import { useState, useEffect } from "react";
+import { useState, useEffect, MouseEvent, ChangeEvent } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
@@ -9,18 +9,18 @@ const postalCodeRegex = /^\d{2}-?(?!000)\d{3}$/;
 const textRegex = /^[\p{L}\s-]*$/u;
 const numberRegex = /^[1-9][0-9]*$|^$/;
 
-export default function NewAddressForm(props) {
+export default function NewAddressForm() {
     // Hooks
     const navigate = useNavigate();
-    const [street, setStreet] = useState("");
-    const [houseNumber, setHouseNumber] = useState("");
-    const [apartmentNumber, setApartmentNumber] = useState("");
-    const [postalCode, setPostalCode] = useState("");
-    const [city, setCity] = useState("");
-    const [voivodeship, setVoivodeship] = useState("");
-    const [country, setCountry] = useState("");
-    const [submitEnabled, setSubmitEnabled] = useState(true);
-    const [errorMsg, setErrorMsg] = useState("");
+    const [street, setStreet] = useState<string>("");
+    const [houseNumber, setHouseNumber] = useState<string>("");
+    const [apartmentNumber, setApartmentNumber] = useState<string>("");
+    const [postalCode, setPostalCode] = useState<string>("");
+    const [city, setCity] = useState<string>("");
+    const [voivodeship, setVoivodeship] = useState<string>("");
+    const [country, setCountry] = useState<string>("");
+    const [submitEnabled, setSubmitEnabled] = useState<boolean>(true);
+    const [errorMsg, setErrorMsg] = useState<string>("");
 
     // Validate form 
     useEffect(() => {
@@ -45,12 +45,12 @@ export default function NewAddressForm(props) {
     }, [street, houseNumber, apartmentNumber, postalCode, city, voivodeship, country]);
 
     // Handlers
-    const handleSubmit = (event) => {
+    const handleSubmit = (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
 
         const url = buildSecureUrl("/profiles/addresses");
         const token = Cookies.get("auth-token");
-        let formattedPostalCode;
+        let formattedPostalCode: string;
 
         // Make sure to send the postal code in corrent form (with a dash on the 3rd position)
         if (postalCode.indexOf("-") === -1) {
@@ -80,14 +80,19 @@ export default function NewAddressForm(props) {
             if (res.ok) {
                 navigate("/addresses", { replace: true });
             } else {
-                res.json().then(parsed => setErrorMsg(parsed.message));
+                res.json().then((parsed: unknown) => {
+                    if (parsed !== null && typeof parsed === "object" && "message" in parsed && typeof parsed.message === "string") {
+                        setErrorMsg(parsed.message);
+                    }
+                });
             }
-        }).catch(err => {
-            setErrorMsg(err.message);
+        }).catch((err: unknown) => {
+            if (err instanceof Error)
+                setErrorMsg(err.message);
         });
     }
 
-    const handleChange = (event, setter, regex) => {
+    const handleChange = (event: ChangeEvent<HTMLInputElement>, setter: React.Dispatch<React.SetStateAction<string>>, regex: RegExp) => {
         const newValue = event.target.value;
 
         if (regex.test(newValue)) {
@@ -95,7 +100,7 @@ export default function NewAddressForm(props) {
         }
     };
 
-    const handlePostalCodeChange = (event) => {
+    const handlePostalCodeChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newValue = event.target.value;
 
         // There may not be any letters; dash must be at the 3rd position, not earlier and there may only be 1 dash

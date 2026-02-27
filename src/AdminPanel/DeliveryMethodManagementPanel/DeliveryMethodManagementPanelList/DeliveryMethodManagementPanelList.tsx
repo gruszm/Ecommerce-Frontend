@@ -1,11 +1,12 @@
 import "./DeliveryMethodManagementPanelList.css";
 import { useState, useEffect } from "react";
 import { buildPublicUrl } from "../../../utils/api";
+import { isDeliveryMethod, type DeliveryMethod } from "../../../Cart/types/DeliveryMethod.tsx";
 
-export default function DeliveryMethodManagementPanelList(props) {
-    const [loading, setLoading] = useState(true);
-    const [deliveryMethodList, setDeliveryMethodList] = useState([]);
-    const [errorOccured, setErrorOccured] = useState(false);
+export default function DeliveryMethodManagementPanelList() {
+    const [loading, setLoading] = useState<boolean>(true);
+    const [deliveryMethodList, setDeliveryMethodList] = useState<DeliveryMethod[]>([]);
+    const [errorOccured, setErrorOccured] = useState<boolean>(false);
 
     useEffect(() => {
         const url = buildPublicUrl("/delivery/");
@@ -21,11 +22,11 @@ export default function DeliveryMethodManagementPanelList(props) {
             .then(res => {
                 setLoading(false);
 
-                if (res && res.length > 0) {
+                if (Array.isArray(res) && res.length > 0 && res.every(isDeliveryMethod)) {
                     setDeliveryMethodList(res);
                 }
             })
-            .catch(error => {
+            .catch(() => {
                 setLoading(false);
                 setErrorOccured(true);
             });
@@ -40,7 +41,7 @@ export default function DeliveryMethodManagementPanelList(props) {
     }
 
     return (
-        <table style={{margin: "0 auto", borderSpacing: "100px 10px"}}>
+        <table style={{ margin: "0 auto", borderSpacing: "100px 10px" }}>
             <thead>
                 <tr>
                     <th>ID metody dostawy</th>

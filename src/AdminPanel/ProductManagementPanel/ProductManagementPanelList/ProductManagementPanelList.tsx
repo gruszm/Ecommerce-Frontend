@@ -1,11 +1,12 @@
 import "./ProductManagementPanelList.css";
 import { useState, useEffect } from "react";
 import { buildPublicUrl } from "../../../utils/api";
+import { isProduct, type Product } from "../../../Cart/types/Product.tsx";
 
-export default function ProductManagementPanelList(props) {
-    const [loading, setLoading] = useState(true);
-    const [productList, setProductList] = useState([]);
-    const [errorOccured, setErrorOccured] = useState(false);
+export default function ProductManagementPanelList() {
+    const [loading, setLoading] = useState<boolean>(true);
+    const [productList, setProductList] = useState<Product[]>([]);
+    const [errorOccured, setErrorOccured] = useState<boolean>(false);
 
     useEffect(() => {
         const url = buildPublicUrl("/products");
@@ -21,11 +22,11 @@ export default function ProductManagementPanelList(props) {
             .then(res => {
                 setLoading(false);
 
-                if (res && res.length > 0) {
+                if (Array.isArray(res) && res.length > 0 && res.every(isProduct)) {
                     setProductList(res);
                 }
             })
-            .catch(error => {
+            .catch(() => {
                 setLoading(false);
                 setErrorOccured(true);
             });
@@ -44,7 +45,6 @@ export default function ProductManagementPanelList(props) {
             <thead>
                 <tr>
                     <th>ID produktu</th>
-                    <th>ID kategorii</th>
                     <th>Nazwa</th>
                     <th>Cena</th>
                     <th>Ilość</th>
@@ -55,7 +55,6 @@ export default function ProductManagementPanelList(props) {
                 {productList.map(product =>
                     <tr key={product.id}>
                         <td>{product.id}</td>
-                        <td>{product.categoryId}</td>
                         <td>{product.name}</td>
                         <td>{product.price} zł</td>
                         <td>{product.amount}</td>

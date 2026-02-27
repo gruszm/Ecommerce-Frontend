@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import ProductManagementPanelList from "./ProductManagementPanelList/ProductManagementPanelList";
+import ProductManagementPanelList from "./ProductManagementPanelList/ProductManagementPanelList.tsx";
 
 export default function ProductManagementPanel() {
     return (

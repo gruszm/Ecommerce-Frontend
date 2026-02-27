@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export default function AccessDenied(props) {
+export default function AccessDenied() {
     return (
         <div>
             <p>Nie masz uprawnień do tego zasobu.</p>
